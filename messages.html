@@ -524,7 +524,8 @@
 
     window.onAuthReady = async (u) => {
       if (!u) {
-        document.getElementById("chat-empty-area").innerHTML = `<div class="no-login"><div class="ico">💬</div><h2>Connecte-toi pour voir tes messages</h2><p>Tes conversations apparaîtront ici.</p><button class="btn-prim" onclick="go('auth.html')" style="margin-top:18px">Se connecter</button></div>`;
+        document.getElementById("chat-msgs").innerHTML = `<div class="chat-empty"><div class="ico">💬</div><h3>Connecte-toi</h3><p>Pour accéder à ta messagerie.</p><button class="btn-prim" onclick="go('auth.html')" style="margin-top:18px">Se connecter</button></div>`;
+        document.getElementById("conv-list").innerHTML = "";
         return;
       }
       loadConvs(u);
@@ -532,26 +533,37 @@
 
     async function loadConvs(u) {
       try {
-        const s = await getDocs(query(collection(db, "conversations"), where("participants", "array-contains", u.uid), orderBy("updatedAt", "desc")));
+        // Sans orderBy pour éviter l'index composite Firestore
+        const s = await getDocs(query(collection(db, "conversations"), where("participants", "array-contains", u.uid)));
         convs = s.docs.map(d => ({ id: d.id, ...d.data() }));
+        // Trier côté client par updatedAt
+        convs.sort((a, b) => {
+          const ta = a.updatedAt?.toDate ? a.updatedAt.toDate().getTime() : 0;
+          const tb = b.updatedAt?.toDate ? b.updatedAt.toDate().getTime() : 0;
+          return tb - ta;
+        });
         renderConvs(u);
         if (convs.length) openConv(convs[0], u);
       } catch (e) {
-        document.getElementById("conv-list").innerHTML = `<div style="padding:18px;color:var(--tx2);font-size:.84rem;text-align:center">Aucune conversation.</div>`;
+        console.error("loadConvs error:", e);
+        document.getElementById("conv-list").innerHTML = `<div style="padding:22px;color:var(--tx2);font-size:.84rem;text-align:center">💬<br><br>Aucune conversation.<br><br><a href="search.html" style="color:var(--ac)">Explore des annonces →</a></div>`;
       }
     }
 
     function renderConvs(u) {
       const list = document.getElementById("conv-list");
-      if (!convs.length) { list.innerHTML = `<div style="padding:22px;color:var(--tx2);font-size:.84rem;text-align:center">💬<br><br>Aucune conversation.<br>Contacte un propriétaire depuis une annonce.</div>`; return; }
+      if (!convs.length) {
+        list.innerHTML = `<div style="padding:22px;color:var(--tx2);font-size:.84rem;text-align:center">💬<br><br>Aucune conversation pour l'instant.<br><br><a href="search.html" style="color:var(--ac)">Explore des annonces →</a></div>`;
+        return;
+      }
       list.innerHTML = convs.map((c, i) => {
-        const other = c.participants?.filter(p => p !== u.uid)[0] || "?";
         const t = c.updatedAt?.toDate ? c.updatedAt.toDate().toLocaleDateString("fr", { day: "2-digit", month: "short" }) : "";
-        return `<div class="conv-item${i === 0 ? " on" : ""}" onclick="openConvById('${c.id}')">
-      <div class="conv-av">${other.charAt(0).toUpperCase()}<div class="conv-unread-dot"></div></div>
+        const title = (c.listingTitle || "Conversation").substring(0, 26);
+        return `<div class="conv-item${i === 0 ? " on" : ""}" id="ci-${c.id}" onclick="openConvById('${c.id}')">
+      <div class="conv-av">💬</div>
       <div class="conv-info">
-        <div class="conv-name">Annonce : ${(c.listingTitle || c.listingId || "").substring(0, 22)}...</div>
-        <div class="conv-prev">Clique pour voir la conversation</div>
+        <div class="conv-name">${title}</div>
+        <div class="conv-prev">Clique pour voir</div>
       </div>
       <div class="conv-time">${t}</div>
     </div>`;
@@ -561,35 +573,62 @@
     window.openConvById = (id) => {
       const u = getUser(); if (!u) return;
       const c = convs.find(x => x.id === id); if (!c) return;
-      document.querySelectorAll(".conv-item").forEach((el, i) => el.classList.toggle("on", convs[i]?.id === id));
+      document.querySelectorAll(".conv-item").forEach(el => el.classList.remove("on"));
+      const ci = document.getElementById("ci-" + id); if (ci) ci.classList.add("on");
       openConv(c, u);
     };
 
     function openConv(c, u) {
       curConv = c;
-      document.getElementById("chat-hd-title").textContent = "Annonce : " + (c.listingTitle || c.listingId || "").substring(0, 30);
-      document.getElementById("chat-hd-sub").textContent = "Conversation";
+      const title = (c.listingTitle || "Conversation").substring(0, 35);
+      document.getElementById("chat-hd-title").textContent = title;
+      document.getElementById("chat-hd-sub").textContent = "Conversation privée";
       const msgsEl = document.getElementById("chat-msgs");
-      msgsEl.innerHTML = "";
+      msgsEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--tx2)"><div class="spin"></div></div>`;
       if (unsub) unsub();
-      unsub = onSnapshot(query(collection(db, "conversations", c.id, "messages"), orderBy("createdAt", "asc")), snap => {
-        msgsEl.innerHTML = snap.docs.map(d => {
-          const msg = d.data(); const mine = msg.senderId === u.uid;
-          const t = msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
-          return `<div class="msg-bubble ${mine ? "mine" : "theirs"}">${msg.text}<div class="msg-time">${t}</div></div>`;
-        }).join("");
-        msgsEl.scrollTop = msgsEl.scrollHeight;
-      });
+      try {
+        unsub = onSnapshot(
+          query(collection(db, "conversations", c.id, "messages"), orderBy("createdAt", "asc")),
+          snap => {
+            if (snap.empty) {
+              msgsEl.innerHTML = `<div class="chat-empty"><div class="ico">✉️</div><h3>Début de la conversation</h3><p>Envoie ton premier message !</p></div>`;
+              return;
+            }
+            msgsEl.innerHTML = snap.docs.map(d => {
+              const msg = d.data();
+              const mine = msg.senderId === u.uid;
+              const t = msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleTimeString("fr", { hour: "2-digit", minute: "2-digit" }) : "";
+              const escaped = msg.text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+              return `<div class="msg-bubble ${mine ? "mine" : "theirs"}">${escaped}<div class="msg-time">${mine ? "Vous · " : ""}${t}</div></div>`;
+            }).join("");
+            msgsEl.scrollTop = msgsEl.scrollHeight;
+          },
+          err => { console.error("onSnapshot error:", err); toast("Erreur de chargement des messages", "err"); }
+        );
+      } catch (e) { console.error(e); toast("Impossible d'ouvrir la conversation", "err"); }
     }
 
     window.sendMsg = async () => {
-      const u = getUser(); if (!u || !curConv) return;
-      const inp = document.getElementById("chat-inp"); const txt = inp.value.trim(); if (!txt) return;
-      inp.value = "";
+      const u = getUser();
+      if (!u) { toast("Connecte-toi pour envoyer un message", "err"); return; }
+      if (!curConv) { toast("Sélectionne une conversation", ""); return; }
+      const inp = document.getElementById("chat-inp");
+      const txt = inp.value.trim();
+      if (!txt) return;
+      inp.value = ""; inp.focus();
       try {
-        await addDoc(collection(db, "conversations", curConv.id, "messages"), { text: txt, senderId: u.uid, senderName: u.displayName || "Vous", createdAt: serverTimestamp() });
+        await addDoc(collection(db, "conversations", curConv.id, "messages"), {
+          text: txt,
+          senderId: u.uid,
+          senderName: u.displayName || "Vous",
+          createdAt: serverTimestamp()
+        });
         await updateDoc(doc(db, "conversations", curConv.id), { updatedAt: serverTimestamp() });
-      } catch (e) { toast(e.message, "err"); }
+      } catch (e) {
+        console.error("sendMsg error:", e);
+        inp.value = txt; // restore text if failed
+        toast("Erreur d'envoi : " + e.message, "err");
+      }
     };
 
   </script>

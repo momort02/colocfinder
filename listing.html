@@ -709,18 +709,50 @@
     };
     window.closeContact = () => document.getElementById("cmod").classList.remove("open");
     window.sendContact = async () => {
-      const u = getUser(); if (!u) return;
+      const u = getUser();
+      if (!u) { go("auth.html"); return; }
       const msg = document.getElementById("cmsg").value.trim();
       if (!msg) { toast("Écris un message", "err"); return; }
-      if (!listing) { return; }
-      const convId = [u.uid, listing.authorId || "demo"].sort().join("_") + "_" + listing.id;
+      if (!listing) { toast("Annonce introuvable", "err"); return; }
+
+      // Si l'auteur est une démo ou soi-même, on bloque l'envoi à soi-même
+      const authorId = listing.authorId || "";
+      if (authorId === u.uid) { toast("C'est ton propre annonce !", "err"); return; }
+      if (!authorId || authorId.startsWith("demo")) { toast("Contact indisponible pour les annonces démo", "err"); return; }
+
+      const btn = document.querySelector("#cmod .btn-prim");
+      btn.disabled = true; btn.textContent = "Envoi...";
+
+      // ID de conversation déterministe basé sur les deux participants + l'annonce
+      const convId = [u.uid, authorId].sort().join("__") + "__" + listing.id;
+
       try {
-        await setDoc(doc(db, "conversations", convId), { participants: [u.uid, listing.authorId || "demo"], listingId: listing.id, listingTitle: listing.title, updatedAt: serverTimestamp() }, { merge: true });
-        await addDoc(collection(db, "conversations", convId, "messages"), { text: msg, senderId: u.uid, senderName: u.displayName || "Vous", createdAt: serverTimestamp() });
-        closeContact(); document.getElementById("cmsg").value = "";
+        // Crée ou met à jour la conversation
+        await setDoc(doc(db, "conversations", convId), {
+          participants: [u.uid, authorId],
+          listingId: listing.id,
+          listingTitle: listing.title || "",
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+
+        // Ajoute le message
+        await addDoc(collection(db, "conversations", convId, "messages"), {
+          text: msg,
+          senderId: u.uid,
+          senderName: u.displayName || "Anonyme",
+          createdAt: serverTimestamp()
+        });
+
+        closeContact();
+        document.getElementById("cmsg").value = "";
         toast("💬 Message envoyé !", "suc");
-        setTimeout(() => go("messages.html"), 1200);
-      } catch (e) { toast(e.message, "err"); }
+        setTimeout(() => go("messages.html"), 1300);
+      } catch (e) {
+        console.error("sendContact error:", e);
+        toast("Erreur : " + e.message, "err");
+      } finally {
+        btn.disabled = false; btn.textContent = "Envoyer ✉️";
+      }
     };
 
     loadListing();
