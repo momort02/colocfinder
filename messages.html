@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Messages — ColocFinder</title>
+<link rel="stylesheet" href="_s.css"/>
+<style>
+.msg-layout{height:calc(100vh - var(--nav));display:grid;grid-template-columns:310px 1fr;max-width:1280px;margin:0 auto;padding:0;gap:0;border-left:1px solid var(--bd);border-right:1px solid var(--bd)}
+.conv-panel{border-right:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden}
+.conv-hd{padding:20px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.conv-hd h2{font-family:var(--ff);font-size:1.1rem;font-weight:800;margin-bottom:12px}
+.conv-search{position:relative}
+.conv-search input{width:100%;padding:9px 12px 9px 34px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:var(--rs);color:var(--tx);font-family:var(--fb);font-size:.85rem;outline:none;transition:var(--tr)}
+.conv-search input:focus{border-color:var(--ac)}
+.conv-search::before{content:"🔍";position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.78rem;pointer-events:none}
+.conv-list{flex:1;overflow-y:auto;padding:8px 0}
+.conv-item{padding:14px 18px;cursor:pointer;transition:var(--tr);border-left:3px solid transparent;display:flex;align-items:center;gap:12px}
+.conv-item:hover,.conv-item.on{background:var(--sf2);border-left-color:var(--ac)}
+.conv-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;font-size:1rem;color:#fff;flex-shrink:0;position:relative}
+.conv-unread-dot{position:absolute;top:0;right:0;width:10px;height:10px;border-radius:50%;background:var(--ac);border:2px solid var(--bg)}
+.conv-info{flex:1;min-width:0}
+.conv-name{font-weight:600;font-size:.88rem;margin-bottom:2px}
+.conv-prev{font-size:.79rem;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.conv-time{font-size:.72rem;color:var(--tx3);flex-shrink:0}
+/* CHAT */
+.chat-area{display:flex;flex-direction:column;overflow:hidden}
+.chat-hd{padding:18px 22px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:14px;flex-shrink:0}
+.chat-hd-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;font-size:.95rem;color:#fff;flex-shrink:0}
+.chat-hd-info h3{font-family:var(--ff);font-size:.95rem;font-weight:700}
+.chat-hd-info p{font-size:.78rem;color:var(--tx2)}
+.chat-hd-actions{margin-left:auto;display:flex;gap:7px}
+.chat-msgs{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:12px}
+.msg-bubble{max-width:70%;padding:11px 16px;border-radius:17px;font-size:.88rem;line-height:1.55;position:relative}
+.msg-bubble.mine{background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg-bubble.theirs{background:var(--sf2);color:var(--tx);align-self:flex-start;border-bottom-left-radius:4px;border:1px solid var(--bd)}
+.msg-time{font-size:.68rem;opacity:.55;margin-top:4px;text-align:right}
+.chat-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--tx2)}
+.chat-empty .ico{font-size:3rem;margin-bottom:14px}
+.chat-empty h3{font-family:var(--ff);font-size:1.1rem;color:var(--tx);margin-bottom:7px}
+.chat-in{padding:16px 22px;border-top:1px solid var(--bd);display:flex;gap:10px;flex-shrink:0}
+.chat-in input{flex:1;padding:12px 18px;background:var(--sf2);border:1.5px solid var(--bd2);border-radius:99px;color:var(--tx);font-family:var(--fb);font-size:.9rem;outline:none;transition:var(--tr)}
+.chat-in input:focus{border-color:var(--ac);background:var(--sf)}
+.btn-send{width:44px;height:44px;background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;border-radius:50%;cursor:pointer;display:grid;place-items:center;font-size:1rem;transition:var(--tr);flex-shrink:0;box-shadow:0 0 14px var(--glow)}
+.btn-send:hover{transform:scale(1.08);box-shadow:0 0 20px var(--glow)}
+.no-login{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;text-align:center;padding:40px;color:var(--tx2)}
+.no-login .ico{font-size:3.5rem;margin-bottom:18px}
+.no-login h2{font-family:var(--ff);font-size:1.4rem;color:var(--tx);margin-bottom:9px}
+@media(max-width:900px){.msg-layout{grid-template-columns:1fr}.conv-panel{display:none}.conv-panel.open{display:flex}.chat-area{display:none}.chat-area.open{display:flex}}
+</style>
+</head>
+<body data-page="messages">
+<nav class="nav" id="mainnav">
+  <div class="nav-inner">
+    <div class="logo" onclick="go('index.html')">
+      <div class="logo-icon">🏠</div>
+      <div class="logo-name">Coloc<b>Finder</b></div>
+    </div>
+    <div class="nav-links" id="navlinks">
+      <a class="nl" href="index.html" data-p="home">Accueil</a>
+      <a class="nl" href="search.html" data-p="search">🔍 Rechercher</a>
+      <a class="nl" href="post.html" data-p="post">+ Publier</a>
+      <a class="nl" href="messages.html" data-p="messages">💬 Messages</a>
+      <a class="nl" href="favorites.html" data-p="favs">♡ Favoris <span class="bdg" id="fbdg" style="display:none">0</span></a>
+    </div>
+    <div class="nav-r">
+      <button class="btn-theme" id="btheme" onclick="toggleTheme()">☀</button>
+      <button class="btn-out hidden" id="nb-login" onclick="go('auth.html')">Connexion</button>
+      <button class="btn-in hidden" id="nb-reg" onclick="go('auth.html?t=reg')">S'inscrire</button>
+      <div class="nav-av hidden" id="nav-av" onclick="go('profile.html')"></div>
+      <button class="btn-out hidden" id="nb-out" onclick="doLogout()">Déco</button>
+    </div>
+    <button class="hamburger" onclick="toggleMob()">☰</button>
+  </div>
+  <div class="mob-nav" id="mobnav">
+    <a href="index.html">🏠 Accueil</a>
+    <a href="search.html">🔍 Rechercher</a>
+    <a href="post.html">+ Publier</a>
+    <a href="messages.html">💬 Messages</a>
+    <a href="favorites.html">♡ Favoris</a>
+    <hr>
+    <a id="mob-login" href="auth.html">Connexion / Inscription</a>
+    <a id="mob-prof" class="hidden" href="profile.html">Mon profil</a>
+    <a id="mob-out" class="hidden" href="#" onclick="doLogout();return false">Déconnexion</a>
+  </div>
+</nav>
+<div class="page-top">
+
+<div class="msg-layout">
+  <div class="conv-panel">
+    <div class="conv-hd">
+      <h2>Messages</h2>
+      <div class="conv-search"><input type="text" placeholder="Rechercher une conversation..."/></div>
+    </div>
+    <div class="conv-list" id="conv-list"><div style="padding:22px;text-align:center;color:var(--tx2)"><div class="spin"></div></div></div>
+  </div>
+  <div class="chat-area" id="chat-area">
+    <div class="chat-hd">
+      <div class="chat-hd-av">💬</div>
+      <div class="chat-hd-info">
+        <h3 id="chat-hd-title">Sélectionne une conversation</h3>
+        <p id="chat-hd-sub">Tes messages apparaîtront ici</p>
+      </div>
+      <div class="chat-hd-actions">
+        <button class="btn-sm" onclick="toast('Fonctionnalité bientôt disponible','')">📋 Voir l'annonce</button>
+      </div>
+    </div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="chat-empty" id="chat-empty-area">
+        <div class="ico">💬</div>
+        <h3>Tes conversations</h3>
+        <p>Sélectionne une conversation ou contacte un propriétaire depuis une annonce.</p>
+      </div>
+    </div>
+    <div class="chat-in">
+      <input type="text" id="chat-inp" placeholder="Écris ton message..." onkeydown="if(event.key==='Enter')sendMsg()"/>
+      <button class="btn-send" onclick="sendMsg()">➤</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<div id="cf-toast" class="toast"></div>
+<script type="module">
+
+const FB_CFG={apiKey:"AIzaSyBQJ5dwmDfne7rNPOa_GTDMvBFaTPa13Is",authDomain:"colocfinder-71330.firebaseapp.com",projectId:"colocfinder-71330",storageBucket:"colocfinder-71330.firebasestorage.app",messagingSenderId:"242073346696",appId:"1:242073346696:web:c0410d1c95411c3953b53d"};
+
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,getDocs,addDoc,getDoc,doc,query,orderBy,where,limit,onSnapshot,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app=initializeApp(FB_CFG);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let CU=null;
+
+const DEMO=[
+  {id:"d1",title:"Grand T4 lumineux Bastille",city:"Paris",type:"Appartement",price:620,colos:3,surface:95,desc:"Superbe appartement au cœur du 11e, à 5 min du métro Bastille. Salon spacieux, cuisine équipée, chambres lumineuses. Charges comprises.",image:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80",lat:48.853,lng:2.369,authorName:"Sarah M.",authorId:"demo1",createdAt:{toDate:()=>new Date()}},
+  {id:"d2",title:"Maison avec jardin Lyon 6e",city:"Lyon",type:"Maison",price:450,colos:4,surface:130,desc:"Belle maison avec jardin en plein cœur de Lyon. 4 chambres, 2 SDB, jardin privatif. Ambiance conviviale.",image:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=80",lat:45.774,lng:4.832,authorName:"Tom L.",authorId:"demo2",createdAt:{toDate:()=>new Date()}},
+  {id:"d3",title:"Studio rénové Bordeaux Centre",city:"Bordeaux",type:"Studio",price:380,colos:2,surface:45,desc:"Studio entièrement rénové à deux pas de la place de la Victoire. Idéal étudiants. Fibre incluse.",image:"https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&q=80",lat:44.836,lng:-0.580,authorName:"Julie B.",authorId:"demo3",createdAt:{toDate:()=>new Date(Date.now()-86400000)}},
+  {id:"d4",title:"T3 cosy Montmartre vue dégagée",city:"Paris",type:"Appartement",price:700,colos:2,surface:70,desc:"Charmant appartement en plein Montmartre. 2 chambres, cuisine ouverte. Vue dégagée, 10 min de Pigalle.",image:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=80",lat:48.887,lng:2.344,authorName:"Alex D.",authorId:"demo4",createdAt:{toDate:()=>new Date(Date.now()-172800000)}},
+  {id:"d5",title:"Villa partagée Marseille Prado",city:"Marseille",type:"Maison",price:490,colos:5,surface:160,desc:"Grande villa en quartier calme. Piscine partagée, terrasse, jardin. Esprit festif mais respectueux.",image:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=80",lat:43.270,lng:5.395,authorName:"Marc P.",authorId:"demo5",createdAt:{toDate:()=>new Date(Date.now()-259200000)}},
+  {id:"d6",title:"Appartement T3 Toulouse Capitole",city:"Toulouse",type:"Appartement",price:410,colos:3,surface:80,desc:"Bel appartement lumineux à 2 min du Capitole. Cuisine moderne, chambres équipées. Ambiance zen.",image:"https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=700&q=80",lat:43.604,lng:1.444,authorName:"Lena V.",authorId:"demo6",createdAt:{toDate:()=>new Date(Date.now()-345600000)}},
+  {id:"d7",title:"Chambre étudiant Vieux-Lille",city:"Lille",type:"Appartement",price:320,colos:4,surface:65,desc:"Super coloc dans le Vieux-Lille, proche de toutes les facs. 4 colocataires sympas, cuisine partagée.",image:"https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=700&q=80",lat:50.629,lng:3.057,authorName:"Camille R.",authorId:"demo7",createdAt:{toDate:()=>new Date(Date.now()-432000000)}},
+  {id:"d8",title:"Loft industriel Nantes Île",city:"Nantes",type:"Appartement",price:550,colos:3,surface:110,desc:"Magnifique loft style industriel. Hauts plafonds, grandes fenêtres, à 5 min du tram.",image:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80",lat:47.213,lng:-1.552,authorName:"Hugo F.",authorId:"demo8",createdAt:{toDate:()=>new Date(Date.now()-518400000)}},
+];
+
+// ── NAV SETUP ──
+const th=localStorage.getItem("cfth")||"dark";
+document.documentElement.dataset.theme=th;
+document.getElementById("btheme").textContent=th==="dark"?"☀":"☽";
+window.toggleTheme=()=>{const d=document.documentElement.dataset.theme==="dark";document.documentElement.dataset.theme=d?"light":"dark";document.getElementById("btheme").textContent=d?"☽":"☀";localStorage.setItem("cfth",d?"light":"dark");};
+window.toggleMob=()=>document.getElementById("mobnav").classList.toggle("open");
+window.go=(url)=>window.location.href=url;
+window.scrollTo&&window.addEventListener("scroll",()=>document.getElementById("mainnav").classList.toggle("scrolled",scrollY>20));
+
+// highlight active
+const pg=document.body.dataset.page;
+document.querySelectorAll(".nl[data-p]").forEach(el=>el.classList.toggle("on",el.dataset.p===pg));
+
+// fav badge
+function updFavBdg(){const f=JSON.parse(localStorage.getItem("cffavs")||"[]"),b=document.getElementById("fbdg");if(b){b.textContent=f.length;b.style.display=f.length?"":"none";}}
+updFavBdg();
+
+// auth
+onAuthStateChanged(auth,u=>{
+  CU=u;
+  const lo=document.getElementById("nb-login"),re=document.getElementById("nb-reg"),out=document.getElementById("nb-out"),av=document.getElementById("nav-av");
+  const ml=document.getElementById("mob-login"),mp=document.getElementById("mob-prof"),mo=document.getElementById("mob-out");
+  if(u){
+    lo.classList.add("hidden");re.classList.add("hidden");out.classList.remove("hidden");av.classList.remove("hidden");
+    av.textContent=(u.displayName||u.email||"?").charAt(0).toUpperCase();
+    if(ml)ml.classList.add("hidden");if(mp)mp.classList.remove("hidden");if(mo)mo.classList.remove("hidden");
+  }else{
+    lo.classList.remove("hidden");re.classList.remove("hidden");out.classList.add("hidden");av.classList.add("hidden");
+    if(ml)ml.classList.remove("hidden");if(mp)mp.classList.add("hidden");if(mo)mo.classList.add("hidden");
+  }
+  if(typeof onAuthReady==="function")onAuthReady(u);
+});
+window.doLogout=async()=>{await signOut(auth);location.href="index.html";};
+window.getUser=()=>CU;
+
+// toast
+window.toast=(msg,type="",dur=3200)=>{let t=document.getElementById("cf-toast");if(!t){t=document.createElement("div");t.id="cf-toast";t.className="toast";document.body.appendChild(t);}t.textContent=msg;t.className="toast "+(type||"");requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add("show")));clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),dur);};
+
+// card html
+window.mkCard=(l)=>{
+  const fav=JSON.parse(localStorage.getItem("cffavs")||"[]").includes(l.id);
+  const ts=l.createdAt?.toDate?l.createdAt.toDate():new Date(l.createdAt||0);
+  const isNew=(Date.now()-ts.getTime())<86400000*3;
+  return `<div class="lcard" onclick="go('listing.html?id=${l.id}')">
+    ${isNew?'<span class="lcard-new">Nouveau</span>':''}
+    <button class="lcard-fav${fav?' on':''}" onclick="event.stopPropagation();toggleFav('${l.id}',this)">${fav?'♥':'♡'}</button>
+    <div class="lcard-img-wrap"><img class="lcard-img" src="${l.image||'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&q=75'}" loading="lazy" alt="${l.title}"/></div>
+    <div class="lcard-body">
+      <span class="lcard-type">${l.type||'Logement'}</span>
+      <div class="lcard-title">${l.title}</div>
+      <div class="lcard-city">📍 ${l.city}</div>
+      <div class="lcard-foot">
+        <div class="lcard-price">${l.price}€ <s>/mois</s></div>
+        <div class="lcard-colos">👥 ${l.colos} coloc${l.colos>1?'s':''}</div>
+      </div>
+    </div>
+  </div>`;
+};
+
+window.toggleFav=(id,btn)=>{
+  const f=JSON.parse(localStorage.getItem("cffavs")||"[]");
+  const i=f.indexOf(id);
+  if(i===-1){f.push(id);btn.textContent="♥";btn.classList.add("on");toast("♥ Ajouté aux favoris","suc");}
+  else{f.splice(i,1);btn.textContent="♡";btn.classList.remove("on");toast("Retiré des favoris","");}
+  localStorage.setItem("cffavs",JSON.stringify(f));updFavBdg();
+};
+
+// seed + load all
+async function seedIfEmpty(){try{const s=await getDocs(query(collection(db,"listings"),limit(1)));if(s.empty)for(const d of DEMO)await addDoc(collection(db,"listings"),{...d,createdAt:serverTimestamp()});}catch(e){}}
+window.loadListings=async()=>{
+  await seedIfEmpty();
+  try{const s=await getDocs(query(collection(db,"listings"),orderBy("createdAt","desc")));return s.empty?DEMO:s.docs.map(d=>({id:d.id,...d.data()}));}
+  catch(e){return DEMO;}
+};
+window.db=db;window.auth=auth;window.DEMO=DEMO;
+window.fmtErr=(e)=>{const c=e.code||"";if(c.includes("user-not-found")||c.includes("wrong-password")||c.includes("invalid-credential"))return"Email ou mot de passe incorrect.";if(c.includes("email-already-in-use"))return"Email déjà utilisé.";if(c.includes("weak-password"))return"Mot de passe trop court (min. 6).";return e.message||"Erreur.";};
+
+
+let convs=[],curConv=null,unsub=null;
+
+window.onAuthReady=async(u)=>{
+  if(!u){
+    document.getElementById("chat-empty-area").innerHTML=`<div class="no-login"><div class="ico">💬</div><h2>Connecte-toi pour voir tes messages</h2><p>Tes conversations apparaîtront ici.</p><button class="btn-prim" onclick="go('auth.html')" style="margin-top:18px">Se connecter</button></div>`;
+    return;
+  }
+  loadConvs(u);
+};
+
+async function loadConvs(u){
+  try{
+    const s=await getDocs(query(collection(db,"conversations"),where("participants","array-contains",u.uid),orderBy("updatedAt","desc")));
+    convs=s.docs.map(d=>({id:d.id,...d.data()}));
+    renderConvs(u);
+    if(convs.length)openConv(convs[0],u);
+  }catch(e){
+    document.getElementById("conv-list").innerHTML=`<div style="padding:18px;color:var(--tx2);font-size:.84rem;text-align:center">Aucune conversation.</div>`;
+  }
+}
+
+function renderConvs(u){
+  const list=document.getElementById("conv-list");
+  if(!convs.length){list.innerHTML=`<div style="padding:22px;color:var(--tx2);font-size:.84rem;text-align:center">💬<br><br>Aucune conversation.<br>Contacte un propriétaire depuis une annonce.</div>`;return;}
+  list.innerHTML=convs.map((c,i)=>{
+    const other=c.participants?.filter(p=>p!==u.uid)[0]||"?";
+    const t=c.updatedAt?.toDate?c.updatedAt.toDate().toLocaleDateString("fr",{day:"2-digit",month:"short"}):"";
+    return `<div class="conv-item${i===0?" on":""}" onclick="openConvById('${c.id}')">
+      <div class="conv-av">${other.charAt(0).toUpperCase()}<div class="conv-unread-dot"></div></div>
+      <div class="conv-info">
+        <div class="conv-name">Annonce : ${(c.listingTitle||c.listingId||"").substring(0,22)}...</div>
+        <div class="conv-prev">Clique pour voir la conversation</div>
+      </div>
+      <div class="conv-time">${t}</div>
+    </div>`;
+  }).join("");
+}
+
+window.openConvById=(id)=>{
+  const u=getUser();if(!u)return;
+  const c=convs.find(x=>x.id===id);if(!c)return;
+  document.querySelectorAll(".conv-item").forEach((el,i)=>el.classList.toggle("on",convs[i]?.id===id));
+  openConv(c,u);
+};
+
+function openConv(c,u){
+  curConv=c;
+  document.getElementById("chat-hd-title").textContent="Annonce : "+(c.listingTitle||c.listingId||"").substring(0,30);
+  document.getElementById("chat-hd-sub").textContent="Conversation";
+  const msgsEl=document.getElementById("chat-msgs");
+  msgsEl.innerHTML="";
+  if(unsub)unsub();
+  unsub=onSnapshot(query(collection(db,"conversations",c.id,"messages"),orderBy("createdAt","asc")),snap=>{
+    msgsEl.innerHTML=snap.docs.map(d=>{
+      const msg=d.data();const mine=msg.senderId===u.uid;
+      const t=msg.createdAt?.toDate?msg.createdAt.toDate().toLocaleTimeString("fr",{hour:"2-digit",minute:"2-digit"}):"";
+      return `<div class="msg-bubble ${mine?"mine":"theirs"}">${msg.text}<div class="msg-time">${t}</div></div>`;
+    }).join("");
+    msgsEl.scrollTop=msgsEl.scrollHeight;
+  });
+}
+
+window.sendMsg=async()=>{
+  const u=getUser();if(!u||!curConv)return;
+  const inp=document.getElementById("chat-inp");const txt=inp.value.trim();if(!txt)return;
+  inp.value="";
+  try{
+    await addDoc(collection(db,"conversations",curConv.id,"messages"),{text:txt,senderId:u.uid,senderName:u.displayName||"Vous",createdAt:serverTimestamp()});
+    await updateDoc(doc(db,"conversations",curConv.id),{updatedAt:serverTimestamp()});
+  }catch(e){toast(e.message,"err");}
+};
+
+</script>
+</body>
+</html>

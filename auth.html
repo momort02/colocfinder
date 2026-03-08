@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Connexion — ColocFinder</title>
+<link rel="stylesheet" href="_s.css"/>
+<style>
+.auth-wrap{min-height:calc(100vh - var(--nav));display:grid;place-items:center;padding:40px 26px;position:relative;overflow:hidden}
+.auth-bg{position:absolute;inset:0;z-index:0}
+.auth-orb1{position:absolute;width:500px;height:500px;background:var(--ac);border-radius:50%;filter:blur(110px);opacity:.07;top:-100px;right:-120px;animation:orb2 12s ease-in-out infinite}
+.auth-orb2{position:absolute;width:400px;height:400px;background:var(--ac2);border-radius:50%;filter:blur(100px);opacity:.07;bottom:-80px;left:-100px;animation:orb2 10s ease-in-out infinite reverse}
+@keyframes orb2{0%,100%{transform:scale(1) translate(0,0)}50%{transform:scale(1.08) translate(20px,-20px)}}
+.auth-glines{position:absolute;inset:0;background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:55px 55px;mask-image:radial-gradient(ellipse at center,black 40%,transparent 75%)}
+.auth-box{position:relative;z-index:1;background:var(--sf);border:1px solid var(--bd2);border-radius:22px;padding:40px;width:100%;max-width:460px;box-shadow:var(--sh);animation:authIn .4s ease}
+@keyframes authIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.auth-logo{display:flex;justify-content:center;margin-bottom:28px}
+.auth-tabs{display:flex;background:var(--bg2);border-radius:var(--rs);padding:4px;margin-bottom:28px}
+.atab{flex:1;padding:10px;border-radius:9px;border:none;background:transparent;color:var(--tx2);font-size:.87rem;font-weight:600;cursor:pointer;transition:var(--tr);font-family:var(--fb)}
+.atab.on{background:var(--sf);color:var(--tx);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.auth-title{font-family:var(--ff);font-size:1.55rem;font-weight:800;margin-bottom:5px}
+.auth-sub{color:var(--tx2);font-size:.87rem;margin-bottom:26px}
+.fi-wrap{position:relative}
+.fi-wrap .ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--tx3);pointer-events:none;font-size:.88rem}
+.fi-wrap .fi{padding-left:36px;padding-right:36px}
+.fi-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--tx3);font-size:.85rem;padding:2px;transition:var(--tr)}
+.fi-eye:hover{color:var(--tx)}
+.pass-str{margin-top:8px;display:flex;align-items:center;gap:10px}
+.str-bar{flex:1;height:4px;background:var(--bd2);border-radius:9px;overflow:hidden}
+.str-fill{height:100%;border-radius:9px;transition:all .3s}
+.str-lbl{font-size:.73rem;font-weight:600;white-space:nowrap}
+.auth-or{display:flex;align-items:center;gap:10px;margin:6px 0}
+.auth-or hr{flex:1;border:none;border-top:1px solid var(--bd)}
+.auth-or span{font-size:.76rem;color:var(--tx3)}
+.auth-sw{text-align:center;margin-top:18px;font-size:.84rem;color:var(--tx2)}
+.auth-sw button{background:none;border:none;color:var(--ac);cursor:pointer;font-size:.84rem;font-weight:600;font-family:var(--fb);text-decoration:underline}
+.auth-chk{display:flex;align-items:flex-start;gap:10px;margin-bottom:18px;cursor:pointer}
+.auth-chk input{display:none}
+.chk-box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--bd2);background:var(--bg2);display:grid;place-items:center;flex-shrink:0;transition:var(--tr);margin-top:1px}
+.auth-chk input:checked+.chk-box{background:var(--ac);border-color:var(--ac)}
+.auth-chk input:checked+.chk-box::after{content:"✓";color:#fff;font-size:.72rem;font-weight:700}
+.auth-chk span{font-size:.84rem;color:var(--tx2);line-height:1.4}
+.auth-chk a{color:var(--ac)}
+.ferr{font-size:.75rem;color:var(--red);margin-top:5px}
+.fbk{background:none;border:none;color:var(--tx2);font-size:.83rem;cursor:pointer;padding:0 0 18px;font-family:var(--fb);display:flex;align-items:center;gap:6px}
+.fbk:hover{color:var(--tx)}
+</style>
+</head>
+<body data-page="auth">
+<nav class="nav" id="mainnav">
+  <div class="nav-inner">
+    <div class="logo" onclick="go('index.html')">
+      <div class="logo-icon">🏠</div>
+      <div class="logo-name">Coloc<b>Finder</b></div>
+    </div>
+    <div class="nav-links" id="navlinks">
+      <a class="nl" href="index.html" data-p="home">Accueil</a>
+      <a class="nl" href="search.html" data-p="search">🔍 Rechercher</a>
+      <a class="nl" href="post.html" data-p="post">+ Publier</a>
+      <a class="nl" href="messages.html" data-p="messages">💬 Messages</a>
+      <a class="nl" href="favorites.html" data-p="favs">♡ Favoris <span class="bdg" id="fbdg" style="display:none">0</span></a>
+    </div>
+    <div class="nav-r">
+      <button class="btn-theme" id="btheme" onclick="toggleTheme()">☀</button>
+      <button class="btn-out hidden" id="nb-login" onclick="go('auth.html')">Connexion</button>
+      <button class="btn-in hidden" id="nb-reg" onclick="go('auth.html?t=reg')">S'inscrire</button>
+      <div class="nav-av hidden" id="nav-av" onclick="go('profile.html')"></div>
+      <button class="btn-out hidden" id="nb-out" onclick="doLogout()">Déco</button>
+    </div>
+    <button class="hamburger" onclick="toggleMob()">☰</button>
+  </div>
+  <div class="mob-nav" id="mobnav">
+    <a href="index.html">🏠 Accueil</a>
+    <a href="search.html">🔍 Rechercher</a>
+    <a href="post.html">+ Publier</a>
+    <a href="messages.html">💬 Messages</a>
+    <a href="favorites.html">♡ Favoris</a>
+    <hr>
+    <a id="mob-login" href="auth.html">Connexion / Inscription</a>
+    <a id="mob-prof" class="hidden" href="profile.html">Mon profil</a>
+    <a id="mob-out" class="hidden" href="#" onclick="doLogout();return false">Déconnexion</a>
+  </div>
+</nav>
+<div class="page-top">
+
+<div class="auth-wrap">
+  <div class="auth-bg"><div class="auth-orb1"></div><div class="auth-orb2"></div><div class="auth-glines"></div></div>
+  <div class="auth-box">
+    <div class="auth-logo"><div class="logo-icon" style="width:44px;height:44px;font-size:1.3rem">🏠</div></div>
+    <div class="auth-tabs">
+      <button class="atab on" data-t="login" onclick="switchTab('login')">Connexion</button>
+      <button class="atab" data-t="reg" onclick="switchTab('reg')">Inscription</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="form-login">
+      <div class="auth-title">Bon retour 👋</div>
+      <div class="auth-sub">Connecte-toi à ton compte ColocFinder.</div>
+      <div class="fg"><label>Email</label><div class="fi-wrap"><span class="ico">📧</span><input class="fi" type="email" id="le" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')doLogin()"/></div></div>
+      <div class="fg"><label>Mot de passe</label><div class="fi-wrap"><span class="ico">🔒</span><input class="fi" type="password" id="lp" placeholder="Ton mot de passe" onkeydown="if(event.key==='Enter')doLogin()"/><button class="fi-eye" onclick="toggleEye('lp',this)" type="button">👁</button></div></div>
+      <div style="text-align:right;margin:-10px 0 16px"><button style="background:none;border:none;color:var(--tx3);font-size:.81rem;cursor:pointer;font-family:var(--fb);text-decoration:underline" onclick="showReset()">Mot de passe oublié ?</button></div>
+      <button class="btn-prim" style="width:100%" id="btn-login" onclick="doLogin()">Se connecter</button>
+      <div class="auth-sw">Pas encore de compte ? <button onclick="switchTab('reg')">S'inscrire gratuitement →</button></div>
+    </div>
+
+    <!-- REGISTER -->
+    <div id="form-reg" class="hidden">
+      <div class="auth-title">Créer un compte ✨</div>
+      <div class="auth-sub">Rejoins la communauté ColocFinder.</div>
+      <div class="frow">
+        <div class="fg"><label>Prénom *</label><div class="fi-wrap"><span class="ico">👤</span><input class="fi" type="text" id="rfn" placeholder="Prénom"/></div></div>
+        <div class="fg"><label>Nom *</label><div class="fi-wrap"><span class="ico">👤</span><input class="fi" type="text" id="rln" placeholder="Nom"/></div></div>
+      </div>
+      <div class="fg"><label>Email *</label><div class="fi-wrap"><span class="ico">📧</span><input class="fi" type="email" id="re" placeholder="ton@email.com"/></div><div style="font-size:.74rem;color:var(--tx3);margin-top:5px">🔒 Non visible publiquement</div></div>
+      <div class="fg"><label>Mot de passe *</label><div class="fi-wrap"><span class="ico">🔒</span><input class="fi" type="password" id="rp" placeholder="Min. 8 caractères" oninput="checkStr(this.value)"/><button class="fi-eye" onclick="toggleEye('rp',this)" type="button">👁</button></div>
+        <div class="pass-str" id="str-wrap" style="display:none"><div class="str-bar"><div class="str-fill" id="str-fill"></div></div><span class="str-lbl" id="str-lbl"></span></div>
+      </div>
+      <div class="fg"><label>Confirmer *</label><div class="fi-wrap"><span class="ico">🔒</span><input class="fi" type="password" id="rp2" placeholder="Confirme ton mot de passe" onkeydown="if(event.key==='Enter')doRegister()"/></div><div class="ferr hidden" id="pmatch-err">❌ Les mots de passe ne correspondent pas.</div></div>
+      <label class="auth-chk"><input type="checkbox" id="rcgu"/><span class="chk-box"></span><span>J'accepte les <a href="#" onclick="return false">conditions d'utilisation</a> de ColocFinder</span></label>
+      <button class="btn-prim" style="width:100%" id="btn-reg" onclick="doRegister()">Créer mon compte gratuitement</button>
+      <div class="auth-sw">Déjà un compte ? <button onclick="switchTab('login')">Se connecter →</button></div>
+    </div>
+
+    <!-- RESET -->
+    <div id="form-reset" class="hidden">
+      <button class="fbk" onclick="backLogin()">← Retour à la connexion</button>
+      <div class="auth-title">Mot de passe oublié 🔑</div>
+      <div class="auth-sub">Reçois un lien de réinitialisation par email.</div>
+      <div class="fg"><label>Email</label><div class="fi-wrap"><span class="ico">📧</span><input class="fi" type="email" id="re-email" placeholder="ton@email.com" onkeydown="if(event.key==='Enter')sendReset()"/></div></div>
+      <button class="btn-prim" style="width:100%" onclick="sendReset()">Envoyer le lien 📧</button>
+    </div>
+  </div>
+</div>
+
+</div>
+<div id="cf-toast" class="toast"></div>
+<script type="module">
+
+const FB_CFG={apiKey:"AIzaSyBQJ5dwmDfne7rNPOa_GTDMvBFaTPa13Is",authDomain:"colocfinder-71330.firebaseapp.com",projectId:"colocfinder-71330",storageBucket:"colocfinder-71330.firebasestorage.app",messagingSenderId:"242073346696",appId:"1:242073346696:web:c0410d1c95411c3953b53d"};
+
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,getDocs,addDoc,getDoc,doc,query,orderBy,where,limit,onSnapshot,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app=initializeApp(FB_CFG);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let CU=null;
+
+const DEMO=[
+  {id:"d1",title:"Grand T4 lumineux Bastille",city:"Paris",type:"Appartement",price:620,colos:3,surface:95,desc:"Superbe appartement au cœur du 11e, à 5 min du métro Bastille. Salon spacieux, cuisine équipée, chambres lumineuses. Charges comprises.",image:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80",lat:48.853,lng:2.369,authorName:"Sarah M.",authorId:"demo1",createdAt:{toDate:()=>new Date()}},
+  {id:"d2",title:"Maison avec jardin Lyon 6e",city:"Lyon",type:"Maison",price:450,colos:4,surface:130,desc:"Belle maison avec jardin en plein cœur de Lyon. 4 chambres, 2 SDB, jardin privatif. Ambiance conviviale.",image:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=80",lat:45.774,lng:4.832,authorName:"Tom L.",authorId:"demo2",createdAt:{toDate:()=>new Date()}},
+  {id:"d3",title:"Studio rénové Bordeaux Centre",city:"Bordeaux",type:"Studio",price:380,colos:2,surface:45,desc:"Studio entièrement rénové à deux pas de la place de la Victoire. Idéal étudiants. Fibre incluse.",image:"https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&q=80",lat:44.836,lng:-0.580,authorName:"Julie B.",authorId:"demo3",createdAt:{toDate:()=>new Date(Date.now()-86400000)}},
+  {id:"d4",title:"T3 cosy Montmartre vue dégagée",city:"Paris",type:"Appartement",price:700,colos:2,surface:70,desc:"Charmant appartement en plein Montmartre. 2 chambres, cuisine ouverte. Vue dégagée, 10 min de Pigalle.",image:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=80",lat:48.887,lng:2.344,authorName:"Alex D.",authorId:"demo4",createdAt:{toDate:()=>new Date(Date.now()-172800000)}},
+  {id:"d5",title:"Villa partagée Marseille Prado",city:"Marseille",type:"Maison",price:490,colos:5,surface:160,desc:"Grande villa en quartier calme. Piscine partagée, terrasse, jardin. Esprit festif mais respectueux.",image:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=80",lat:43.270,lng:5.395,authorName:"Marc P.",authorId:"demo5",createdAt:{toDate:()=>new Date(Date.now()-259200000)}},
+  {id:"d6",title:"Appartement T3 Toulouse Capitole",city:"Toulouse",type:"Appartement",price:410,colos:3,surface:80,desc:"Bel appartement lumineux à 2 min du Capitole. Cuisine moderne, chambres équipées. Ambiance zen.",image:"https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=700&q=80",lat:43.604,lng:1.444,authorName:"Lena V.",authorId:"demo6",createdAt:{toDate:()=>new Date(Date.now()-345600000)}},
+  {id:"d7",title:"Chambre étudiant Vieux-Lille",city:"Lille",type:"Appartement",price:320,colos:4,surface:65,desc:"Super coloc dans le Vieux-Lille, proche de toutes les facs. 4 colocataires sympas, cuisine partagée.",image:"https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=700&q=80",lat:50.629,lng:3.057,authorName:"Camille R.",authorId:"demo7",createdAt:{toDate:()=>new Date(Date.now()-432000000)}},
+  {id:"d8",title:"Loft industriel Nantes Île",city:"Nantes",type:"Appartement",price:550,colos:3,surface:110,desc:"Magnifique loft style industriel. Hauts plafonds, grandes fenêtres, à 5 min du tram.",image:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80",lat:47.213,lng:-1.552,authorName:"Hugo F.",authorId:"demo8",createdAt:{toDate:()=>new Date(Date.now()-518400000)}},
+];
+
+// ── NAV SETUP ──
+const th=localStorage.getItem("cfth")||"dark";
+document.documentElement.dataset.theme=th;
+document.getElementById("btheme").textContent=th==="dark"?"☀":"☽";
+window.toggleTheme=()=>{const d=document.documentElement.dataset.theme==="dark";document.documentElement.dataset.theme=d?"light":"dark";document.getElementById("btheme").textContent=d?"☽":"☀";localStorage.setItem("cfth",d?"light":"dark");};
+window.toggleMob=()=>document.getElementById("mobnav").classList.toggle("open");
+window.go=(url)=>window.location.href=url;
+window.scrollTo&&window.addEventListener("scroll",()=>document.getElementById("mainnav").classList.toggle("scrolled",scrollY>20));
+
+// highlight active
+const pg=document.body.dataset.page;
+document.querySelectorAll(".nl[data-p]").forEach(el=>el.classList.toggle("on",el.dataset.p===pg));
+
+// fav badge
+function updFavBdg(){const f=JSON.parse(localStorage.getItem("cffavs")||"[]"),b=document.getElementById("fbdg");if(b){b.textContent=f.length;b.style.display=f.length?"":"none";}}
+updFavBdg();
+
+// auth
+onAuthStateChanged(auth,u=>{
+  CU=u;
+  const lo=document.getElementById("nb-login"),re=document.getElementById("nb-reg"),out=document.getElementById("nb-out"),av=document.getElementById("nav-av");
+  const ml=document.getElementById("mob-login"),mp=document.getElementById("mob-prof"),mo=document.getElementById("mob-out");
+  if(u){
+    lo.classList.add("hidden");re.classList.add("hidden");out.classList.remove("hidden");av.classList.remove("hidden");
+    av.textContent=(u.displayName||u.email||"?").charAt(0).toUpperCase();
+    if(ml)ml.classList.add("hidden");if(mp)mp.classList.remove("hidden");if(mo)mo.classList.remove("hidden");
+  }else{
+    lo.classList.remove("hidden");re.classList.remove("hidden");out.classList.add("hidden");av.classList.add("hidden");
+    if(ml)ml.classList.remove("hidden");if(mp)mp.classList.add("hidden");if(mo)mo.classList.add("hidden");
+  }
+  if(typeof onAuthReady==="function")onAuthReady(u);
+});
+window.doLogout=async()=>{await signOut(auth);location.href="index.html";};
+window.getUser=()=>CU;
+
+// toast
+window.toast=(msg,type="",dur=3200)=>{let t=document.getElementById("cf-toast");if(!t){t=document.createElement("div");t.id="cf-toast";t.className="toast";document.body.appendChild(t);}t.textContent=msg;t.className="toast "+(type||"");requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add("show")));clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),dur);};
+
+// card html
+window.mkCard=(l)=>{
+  const fav=JSON.parse(localStorage.getItem("cffavs")||"[]").includes(l.id);
+  const ts=l.createdAt?.toDate?l.createdAt.toDate():new Date(l.createdAt||0);
+  const isNew=(Date.now()-ts.getTime())<86400000*3;
+  return `<div class="lcard" onclick="go('listing.html?id=${l.id}')">
+    ${isNew?'<span class="lcard-new">Nouveau</span>':''}
+    <button class="lcard-fav${fav?' on':''}" onclick="event.stopPropagation();toggleFav('${l.id}',this)">${fav?'♥':'♡'}</button>
+    <div class="lcard-img-wrap"><img class="lcard-img" src="${l.image||'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&q=75'}" loading="lazy" alt="${l.title}"/></div>
+    <div class="lcard-body">
+      <span class="lcard-type">${l.type||'Logement'}</span>
+      <div class="lcard-title">${l.title}</div>
+      <div class="lcard-city">📍 ${l.city}</div>
+      <div class="lcard-foot">
+        <div class="lcard-price">${l.price}€ <s>/mois</s></div>
+        <div class="lcard-colos">👥 ${l.colos} coloc${l.colos>1?'s':''}</div>
+      </div>
+    </div>
+  </div>`;
+};
+
+window.toggleFav=(id,btn)=>{
+  const f=JSON.parse(localStorage.getItem("cffavs")||"[]");
+  const i=f.indexOf(id);
+  if(i===-1){f.push(id);btn.textContent="♥";btn.classList.add("on");toast("♥ Ajouté aux favoris","suc");}
+  else{f.splice(i,1);btn.textContent="♡";btn.classList.remove("on");toast("Retiré des favoris","");}
+  localStorage.setItem("cffavs",JSON.stringify(f));updFavBdg();
+};
+
+// seed + load all
+async function seedIfEmpty(){try{const s=await getDocs(query(collection(db,"listings"),limit(1)));if(s.empty)for(const d of DEMO)await addDoc(collection(db,"listings"),{...d,createdAt:serverTimestamp()});}catch(e){}}
+window.loadListings=async()=>{
+  await seedIfEmpty();
+  try{const s=await getDocs(query(collection(db,"listings"),orderBy("createdAt","desc")));return s.empty?DEMO:s.docs.map(d=>({id:d.id,...d.data()}));}
+  catch(e){return DEMO;}
+};
+window.db=db;window.auth=auth;window.DEMO=DEMO;
+window.fmtErr=(e)=>{const c=e.code||"";if(c.includes("user-not-found")||c.includes("wrong-password")||c.includes("invalid-credential"))return"Email ou mot de passe incorrect.";if(c.includes("email-already-in-use"))return"Email déjà utilisé.";if(c.includes("weak-password"))return"Mot de passe trop court (min. 6).";return e.message||"Erreur.";};
+
+
+import{createUserWithEmailAndPassword,signInWithEmailAndPassword,updateProfile,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const p=new URLSearchParams(location.search);
+if(p.get("t")==="reg")setTimeout(()=>switchTab("reg"),100);
+
+window.onAuthReady=(u)=>{if(u)go("profile.html");};
+
+window.switchTab=(t)=>{
+  document.querySelectorAll(".atab").forEach(a=>a.classList.toggle("on",a.dataset.t===t));
+  document.getElementById("form-login").classList.toggle("hidden",t!=="login");
+  document.getElementById("form-reg").classList.toggle("hidden",t!=="reg");
+  document.getElementById("form-reset").classList.add("hidden");
+};
+window.showReset=()=>{document.getElementById("form-login").classList.add("hidden");document.getElementById("form-reset").classList.remove("hidden");};
+window.backLogin=()=>{document.getElementById("form-reset").classList.add("hidden");document.getElementById("form-login").classList.remove("hidden");};
+
+window.doLogin=async()=>{
+  const e=document.getElementById("le").value.trim(),p=document.getElementById("lp").value;
+  if(!e||!p){toast("Remplis tous les champs","err");return;}
+  const btn=document.getElementById("btn-login");btn.disabled=true;btn.textContent="Connexion...";
+  try{await signInWithEmailAndPassword(auth,e,p);toast("Connecté !","suc");go("profile.html");}
+  catch(err){toast(fmtErr(err),"err");}
+  btn.disabled=false;btn.textContent="Se connecter";
+};
+
+window.doRegister=async()=>{
+  const fn=document.getElementById("rfn").value.trim(),ln=document.getElementById("rln").value.trim();
+  const e=document.getElementById("re").value.trim(),p=document.getElementById("rp").value,p2=document.getElementById("rp2").value;
+  const cgu=document.getElementById("rcgu").checked;
+  document.getElementById("pmatch-err").classList.add("hidden");
+  if(!fn||!e||!p||!p2){toast("Remplis tous les champs","err");return;}
+  if(p!==p2){document.getElementById("pmatch-err").classList.remove("hidden");return;}
+  if(p.length<8){toast("Mot de passe trop court (min. 8)","err");return;}
+  if(!cgu){toast("Accepte les conditions d'utilisation","err");return;}
+  const btn=document.getElementById("btn-reg");btn.disabled=true;btn.textContent="Création...";
+  try{
+    const c=await createUserWithEmailAndPassword(auth,e,p);
+    await updateProfile(c.user,{displayName:(fn+" "+ln).trim()});
+    await setDoc(doc(db,"users",c.user.uid),{displayName:(fn+" "+ln).trim(),email:e,createdAt:serverTimestamp()});
+    toast("Bienvenue "+fn+" ! 🎉","suc");go("profile.html");
+  }catch(err){toast(fmtErr(err),"err");}
+  btn.disabled=false;btn.textContent="Créer mon compte";
+};
+
+window.sendReset=async()=>{
+  const e=document.getElementById("re-email").value.trim();
+  if(!e){toast("Entre ton email","err");return;}
+  try{await sendPasswordResetEmail(auth,e);toast("📧 Email envoyé !","suc");backLogin();}
+  catch(err){toast(fmtErr(err),"err");}
+};
+
+window.toggleEye=(id,btn)=>{const i=document.getElementById(id);const h=i.type==="password";i.type=h?"text":"password";btn.textContent=h?"🙈":"👁";};
+window.checkStr=(val)=>{
+  const el=document.getElementById("str-wrap");if(!val){el.style.display="none";return;}el.style.display="flex";
+  let s=0;if(val.length>=8)s++;if(val.length>=12)s++;if(/[A-Z]/.test(val))s++;if(/[0-9]/.test(val))s++;if(/[^A-Za-z0-9]/.test(val))s++;
+  const cols=["var(--red)","#f97316","#f59e0b","#84cc16","var(--grn)"];
+  const lbs=["Très faible","Faible","Moyen","Fort","Très fort"];
+  document.getElementById("str-fill").style.cssText=`width:${(s/5)*100}%;background:${cols[s-1]||cols[0]}`;
+  const l=document.getElementById("str-lbl");l.textContent=lbs[s-1]||lbs[0];l.style.color=cols[s-1]||cols[0];
+};
+
+</script>
+</body>
+</html>

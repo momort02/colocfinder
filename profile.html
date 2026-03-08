@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Mon profil — ColocFinder</title>
+<link rel="stylesheet" href="_s.css"/>
+<style>
+.prof-wrap{max-width:1000px;margin:0 auto;padding:40px 26px 80px}
+/* COVER + HEADER */
+.prof-cover{height:180px;background:linear-gradient(135deg,var(--ac),var(--ac2),var(--ac3));border-radius:var(--r);margin-bottom:0;position:relative;overflow:hidden}
+.prof-cover::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.15'/%3E%3C/svg%3E");background-size:200px;opacity:.3}
+.prof-av-wrap{position:relative;margin-top:-50px;margin-left:32px;display:inline-block}
+.prof-av{width:100px;height:100px;border-radius:50%;border:4px solid var(--bg);background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;font-family:var(--ff);font-size:2.4rem;font-weight:800;color:#fff;box-shadow:var(--sh);overflow:hidden;position:relative}
+.prof-av img{width:100%;height:100%;object-fit:cover}
+.prof-av-edit{position:absolute;inset:0;background:rgba(0,0,0,.5);display:none;place-items:center;cursor:pointer;font-size:.8rem;color:#fff;border-radius:50%}
+.prof-av:hover .prof-av-edit{display:grid}
+.prof-header{display:flex;align-items:flex-end;justify-content:space-between;padding:10px 0 22px;flex-wrap:wrap;gap:12px}
+.prof-info{padding-left:32px;padding-top:8px}
+.prof-name{font-family:var(--ff);font-size:1.55rem;font-weight:800;margin-bottom:3px}
+.prof-email{color:var(--tx2);font-size:.88rem}
+.prof-meta{display:flex;gap:18px;margin-top:8px;flex-wrap:wrap}
+.pmeta{font-size:.8rem;color:var(--tx2);display:flex;align-items:center;gap:5px}
+/* STATS */
+.prof-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px}
+.pstat{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rm);padding:18px;text-align:center;transition:var(--tr)}
+.pstat:hover{border-color:var(--bd2);transform:translateY(-2px)}
+.pstat-n{display:block;font-family:var(--ff);font-size:1.7rem;font-weight:800;color:var(--ac)}
+.pstat-l{font-size:.77rem;color:var(--tx2);margin-top:4px;display:block}
+/* TABS */
+.ptabs{display:flex;gap:2px;border-bottom:2px solid var(--bd);margin-bottom:28px;overflow-x:auto}
+.ptab{padding:11px 18px;font-size:.87rem;font-weight:600;color:var(--tx2);cursor:pointer;border:none;background:none;font-family:var(--fb);border-bottom:2px solid transparent;margin-bottom:-2px;transition:var(--tr);white-space:nowrap}
+.ptab:hover{color:var(--tx)}.ptab.on{color:var(--ac);border-bottom-color:var(--ac)}
+/* SETTINGS */
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+.settings-card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:26px}
+.settings-card h3{font-family:var(--ff);font-size:1rem;font-weight:700;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--bd)}
+.avatar-upload{border:2px dashed var(--bd2);border-radius:var(--rm);padding:28px;text-align:center;cursor:pointer;transition:var(--tr)}
+.avatar-upload:hover{border-color:var(--ac);background:rgba(124,106,255,.04)}
+.danger-zone{background:rgba(239,68,68,.05);border:1px solid rgba(239,68,68,.2);border-radius:var(--rm);padding:18px;margin-top:16px}
+.danger-zone h4{color:var(--red);font-size:.85rem;font-weight:700;margin-bottom:8px}
+.danger-zone p{font-size:.82rem;color:var(--tx2);margin-bottom:14px}
+/* EMPTY STATE */
+.empty{text-align:center;padding:60px 20px;color:var(--tx2)}
+.empty .ico{font-size:3rem;margin-bottom:14px;display:block}
+.empty h3{font-family:var(--ff);font-size:1.2rem;margin-bottom:8px;color:var(--tx)}
+/* NOTIFS */
+.notif-list{display:flex;flex-direction:column;gap:10px}
+.notif{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rm);padding:16px;display:flex;align-items:flex-start;gap:13px;transition:var(--tr)}
+.notif:hover{border-color:var(--bd2)}
+.notif.unread{border-left:3px solid var(--ac)}
+.notif-ico{font-size:1.4rem;flex-shrink:0}
+.notif-body{flex:1}
+.notif-txt{font-size:.88rem;margin-bottom:3px}
+.notif-time{font-size:.76rem;color:var(--tx2)}
+@media(max-width:768px){.prof-stats{grid-template-columns:1fr 1fr}.settings-grid{grid-template-columns:1fr}}
+@media(max-width:480px){.prof-stats{grid-template-columns:1fr 1fr}.prof-cover{height:130px}.prof-av{width:76px;height:76px;font-size:1.8rem}}
+</style>
+</head>
+<body data-page="profile">
+<nav class="nav" id="mainnav">
+  <div class="nav-inner">
+    <div class="logo" onclick="go('index.html')">
+      <div class="logo-icon">🏠</div>
+      <div class="logo-name">Coloc<b>Finder</b></div>
+    </div>
+    <div class="nav-links" id="navlinks">
+      <a class="nl" href="index.html" data-p="home">Accueil</a>
+      <a class="nl" href="search.html" data-p="search">🔍 Rechercher</a>
+      <a class="nl" href="post.html" data-p="post">+ Publier</a>
+      <a class="nl" href="messages.html" data-p="messages">💬 Messages</a>
+      <a class="nl" href="favorites.html" data-p="favs">♡ Favoris <span class="bdg" id="fbdg" style="display:none">0</span></a>
+    </div>
+    <div class="nav-r">
+      <button class="btn-theme" id="btheme" onclick="toggleTheme()">☀</button>
+      <button class="btn-out hidden" id="nb-login" onclick="go('auth.html')">Connexion</button>
+      <button class="btn-in hidden" id="nb-reg" onclick="go('auth.html?t=reg')">S'inscrire</button>
+      <div class="nav-av hidden" id="nav-av" onclick="go('profile.html')"></div>
+      <button class="btn-out hidden" id="nb-out" onclick="doLogout()">Déco</button>
+    </div>
+    <button class="hamburger" onclick="toggleMob()">☰</button>
+  </div>
+  <div class="mob-nav" id="mobnav">
+    <a href="index.html">🏠 Accueil</a>
+    <a href="search.html">🔍 Rechercher</a>
+    <a href="post.html">+ Publier</a>
+    <a href="messages.html">💬 Messages</a>
+    <a href="favorites.html">♡ Favoris</a>
+    <hr>
+    <a id="mob-login" href="auth.html">Connexion / Inscription</a>
+    <a id="mob-prof" class="hidden" href="profile.html">Mon profil</a>
+    <a id="mob-out" class="hidden" href="#" onclick="doLogout();return false">Déconnexion</a>
+  </div>
+</nav>
+<div class="page-top">
+
+<div class="prof-wrap">
+  <!-- COVER -->
+  <div class="prof-cover"></div>
+  <div class="prof-av-wrap">
+    <div class="prof-av"><span id="pav-txt">?</span><div class="prof-av-edit">✎ Changer</div></div>
+  </div>
+  <div class="prof-header">
+    <div class="prof-info">
+      <div class="prof-name" id="pname">Chargement...</div>
+      <div class="prof-email" id="pemail">—</div>
+      <div class="prof-meta">
+        <span class="pmeta">📅 <span id="p-since">—</span></span>
+        <span class="pmeta">✅ Profil vérifié</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;padding-right:0">
+      <button class="btn-sec" onclick="go('post.html')">+ Publier une annonce</button>
+      <button class="btn-sm" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="prof-stats">
+    <div class="pstat"><span class="pstat-n" id="pstat-ann">0</span><span class="pstat-l">Annonces publiées</span></div>
+    <div class="pstat"><span class="pstat-n" id="pstat-fav">0</span><span class="pstat-l">Favoris sauvegardés</span></div>
+    <div class="pstat"><span class="pstat-n" id="pstat-msg">0</span><span class="pstat-l">Conversations</span></div>
+    <div class="pstat"><span class="pstat-n">4.9</span><span class="pstat-l">⭐ Note moyenne</span></div>
+  </div>
+
+  <!-- TABS -->
+  <div class="ptabs">
+    <button class="ptab on" onclick="showTab('ann',this)">🏠 Mes annonces</button>
+    <button class="ptab" onclick="showTab('favs',this)">♡ Mes favoris</button>
+    <button class="ptab" onclick="showTab('notifs',this)">🔔 Notifications</button>
+    <button class="ptab" onclick="showTab('settings',this)">⚙️ Paramètres</button>
+  </div>
+
+  <!-- TAB: ANNONCES -->
+  <div id="tab-ann">
+    <div class="cards-grid" id="mine-grid"><div style="grid-column:1/-1;text-align:center;padding:50px;color:var(--tx2)"><div class="spin"></div></div></div>
+    <div id="mine-empty" class="empty hidden"><span class="ico">🏠</span><h3>Aucune annonce publiée</h3><p>Publie ta première annonce et trouve des colocataires.</p><button class="btn-prim" onclick="go('post.html')" style="margin-top:16px">+ Publier une annonce</button></div>
+  </div>
+
+  <!-- TAB: FAVS -->
+  <div id="tab-favs" class="hidden">
+    <div class="cards-grid" id="favs-grid"></div>
+    <div id="favs-empty" class="empty hidden"><span class="ico">♡</span><h3>Aucun favori</h3><p>Sauvegarde les annonces qui t'intéressent.</p><button class="btn-prim" onclick="go('search.html')" style="margin-top:16px">Explorer les annonces</button></div>
+  </div>
+
+  <!-- TAB: NOTIFS -->
+  <div id="tab-notifs" class="hidden">
+    <div class="notif-list" id="notif-list"></div>
+  </div>
+
+  <!-- TAB: SETTINGS -->
+  <div id="tab-settings" class="hidden">
+    <div class="settings-grid">
+      <div class="settings-card">
+        <h3>👤 Informations personnelles</h3>
+        <div class="fg"><label>Nom d'affichage</label><input class="fi" type="text" id="s-name" placeholder="Ton prénom et nom"/></div>
+        <div class="fg"><label>Email</label><input class="fi" type="email" id="s-email" placeholder="ton@email.com" disabled style="opacity:.5"/><div style="font-size:.73rem;color:var(--tx3);margin-top:5px">L'email ne peut pas être modifié directement.</div></div>
+        <button class="btn-prim" onclick="saveProfile()">Enregistrer les modifications</button>
+      </div>
+      <div class="settings-card">
+        <h3>🔒 Changer le mot de passe</h3>
+        <div class="fg"><label>Mot de passe actuel</label><input class="fi" type="password" id="s-curpwd" placeholder="Mot de passe actuel"/></div>
+        <div class="fg"><label>Nouveau mot de passe</label><input class="fi" type="password" id="s-newpwd" placeholder="Min. 8 caractères"/></div>
+        <div class="fg"><label>Confirmer</label><input class="fi" type="password" id="s-newpwd2" placeholder="Confirme le nouveau mot de passe"/></div>
+        <button class="btn-prim" onclick="savePwd()">Changer le mot de passe</button>
+      </div>
+      <div class="settings-card" style="grid-column:1/-1">
+        <h3>🔔 Préférences de notifications</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <label class="auth-chk" style="margin:0"><input type="checkbox" checked/><span class="chk-box"></span><span style="font-size:.85rem;color:var(--tx2)">Nouveaux messages</span></label>
+          <label class="auth-chk" style="margin:0"><input type="checkbox" checked/><span class="chk-box"></span><span style="font-size:.85rem;color:var(--tx2)">Nouveaux favoris</span></label>
+          <label class="auth-chk" style="margin:0"><input type="checkbox"/><span class="chk-box"></span><span style="font-size:.85rem;color:var(--tx2)">Newsletter hebdo</span></label>
+          <label class="auth-chk" style="margin:0"><input type="checkbox" checked/><span class="chk-box"></span><span style="font-size:.85rem;color:var(--tx2)">Alertes nouvelles annonces</span></label>
+        </div>
+        <button class="btn-sec" style="margin-top:18px">Enregistrer les préférences</button>
+      </div>
+    </div>
+    <div class="danger-zone" style="margin-top:22px">
+      <h4>⚠️ Zone dangereuse</h4>
+      <p>La suppression de ton compte est irréversible. Toutes tes données seront perdues.</p>
+      <button class="btn-sm" style="border-color:var(--red);color:var(--red)" onclick="toast('Fonctionnalité en cours de développement','')">Supprimer mon compte</button>
+    </div>
+  </div>
+</div>
+<style>.auth-chk{display:flex;align-items:flex-start;gap:10px;cursor:pointer}.auth-chk input{display:none}.chk-box{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--bd2);background:var(--bg2);display:grid;place-items:center;flex-shrink:0;transition:var(--tr)}.auth-chk input:checked+.chk-box{background:var(--ac);border-color:var(--ac)}.auth-chk input:checked+.chk-box::after{content:"✓";color:#fff;font-size:.72rem;font-weight:700}</style>
+
+</div>
+<div id="cf-toast" class="toast"></div>
+<script type="module">
+
+const FB_CFG={apiKey:"AIzaSyBQJ5dwmDfne7rNPOa_GTDMvBFaTPa13Is",authDomain:"colocfinder-71330.firebaseapp.com",projectId:"colocfinder-71330",storageBucket:"colocfinder-71330.firebasestorage.app",messagingSenderId:"242073346696",appId:"1:242073346696:web:c0410d1c95411c3953b53d"};
+
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getFirestore,collection,getDocs,addDoc,getDoc,doc,query,orderBy,where,limit,onSnapshot,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const app=initializeApp(FB_CFG);
+const auth=getAuth(app);
+const db=getFirestore(app);
+let CU=null;
+
+const DEMO=[
+  {id:"d1",title:"Grand T4 lumineux Bastille",city:"Paris",type:"Appartement",price:620,colos:3,surface:95,desc:"Superbe appartement au cœur du 11e, à 5 min du métro Bastille. Salon spacieux, cuisine équipée, chambres lumineuses. Charges comprises.",image:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80",lat:48.853,lng:2.369,authorName:"Sarah M.",authorId:"demo1",createdAt:{toDate:()=>new Date()}},
+  {id:"d2",title:"Maison avec jardin Lyon 6e",city:"Lyon",type:"Maison",price:450,colos:4,surface:130,desc:"Belle maison avec jardin en plein cœur de Lyon. 4 chambres, 2 SDB, jardin privatif. Ambiance conviviale.",image:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=80",lat:45.774,lng:4.832,authorName:"Tom L.",authorId:"demo2",createdAt:{toDate:()=>new Date()}},
+  {id:"d3",title:"Studio rénové Bordeaux Centre",city:"Bordeaux",type:"Studio",price:380,colos:2,surface:45,desc:"Studio entièrement rénové à deux pas de la place de la Victoire. Idéal étudiants. Fibre incluse.",image:"https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&q=80",lat:44.836,lng:-0.580,authorName:"Julie B.",authorId:"demo3",createdAt:{toDate:()=>new Date(Date.now()-86400000)}},
+  {id:"d4",title:"T3 cosy Montmartre vue dégagée",city:"Paris",type:"Appartement",price:700,colos:2,surface:70,desc:"Charmant appartement en plein Montmartre. 2 chambres, cuisine ouverte. Vue dégagée, 10 min de Pigalle.",image:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=80",lat:48.887,lng:2.344,authorName:"Alex D.",authorId:"demo4",createdAt:{toDate:()=>new Date(Date.now()-172800000)}},
+  {id:"d5",title:"Villa partagée Marseille Prado",city:"Marseille",type:"Maison",price:490,colos:5,surface:160,desc:"Grande villa en quartier calme. Piscine partagée, terrasse, jardin. Esprit festif mais respectueux.",image:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=80",lat:43.270,lng:5.395,authorName:"Marc P.",authorId:"demo5",createdAt:{toDate:()=>new Date(Date.now()-259200000)}},
+  {id:"d6",title:"Appartement T3 Toulouse Capitole",city:"Toulouse",type:"Appartement",price:410,colos:3,surface:80,desc:"Bel appartement lumineux à 2 min du Capitole. Cuisine moderne, chambres équipées. Ambiance zen.",image:"https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=700&q=80",lat:43.604,lng:1.444,authorName:"Lena V.",authorId:"demo6",createdAt:{toDate:()=>new Date(Date.now()-345600000)}},
+  {id:"d7",title:"Chambre étudiant Vieux-Lille",city:"Lille",type:"Appartement",price:320,colos:4,surface:65,desc:"Super coloc dans le Vieux-Lille, proche de toutes les facs. 4 colocataires sympas, cuisine partagée.",image:"https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=700&q=80",lat:50.629,lng:3.057,authorName:"Camille R.",authorId:"demo7",createdAt:{toDate:()=>new Date(Date.now()-432000000)}},
+  {id:"d8",title:"Loft industriel Nantes Île",city:"Nantes",type:"Appartement",price:550,colos:3,surface:110,desc:"Magnifique loft style industriel. Hauts plafonds, grandes fenêtres, à 5 min du tram.",image:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80",lat:47.213,lng:-1.552,authorName:"Hugo F.",authorId:"demo8",createdAt:{toDate:()=>new Date(Date.now()-518400000)}},
+];
+
+// ── NAV SETUP ──
+const th=localStorage.getItem("cfth")||"dark";
+document.documentElement.dataset.theme=th;
+document.getElementById("btheme").textContent=th==="dark"?"☀":"☽";
+window.toggleTheme=()=>{const d=document.documentElement.dataset.theme==="dark";document.documentElement.dataset.theme=d?"light":"dark";document.getElementById("btheme").textContent=d?"☽":"☀";localStorage.setItem("cfth",d?"light":"dark");};
+window.toggleMob=()=>document.getElementById("mobnav").classList.toggle("open");
+window.go=(url)=>window.location.href=url;
+window.scrollTo&&window.addEventListener("scroll",()=>document.getElementById("mainnav").classList.toggle("scrolled",scrollY>20));
+
+// highlight active
+const pg=document.body.dataset.page;
+document.querySelectorAll(".nl[data-p]").forEach(el=>el.classList.toggle("on",el.dataset.p===pg));
+
+// fav badge
+function updFavBdg(){const f=JSON.parse(localStorage.getItem("cffavs")||"[]"),b=document.getElementById("fbdg");if(b){b.textContent=f.length;b.style.display=f.length?"":"none";}}
+updFavBdg();
+
+// auth
+onAuthStateChanged(auth,u=>{
+  CU=u;
+  const lo=document.getElementById("nb-login"),re=document.getElementById("nb-reg"),out=document.getElementById("nb-out"),av=document.getElementById("nav-av");
+  const ml=document.getElementById("mob-login"),mp=document.getElementById("mob-prof"),mo=document.getElementById("mob-out");
+  if(u){
+    lo.classList.add("hidden");re.classList.add("hidden");out.classList.remove("hidden");av.classList.remove("hidden");
+    av.textContent=(u.displayName||u.email||"?").charAt(0).toUpperCase();
+    if(ml)ml.classList.add("hidden");if(mp)mp.classList.remove("hidden");if(mo)mo.classList.remove("hidden");
+  }else{
+    lo.classList.remove("hidden");re.classList.remove("hidden");out.classList.add("hidden");av.classList.add("hidden");
+    if(ml)ml.classList.remove("hidden");if(mp)mp.classList.add("hidden");if(mo)mo.classList.add("hidden");
+  }
+  if(typeof onAuthReady==="function")onAuthReady(u);
+});
+window.doLogout=async()=>{await signOut(auth);location.href="index.html";};
+window.getUser=()=>CU;
+
+// toast
+window.toast=(msg,type="",dur=3200)=>{let t=document.getElementById("cf-toast");if(!t){t=document.createElement("div");t.id="cf-toast";t.className="toast";document.body.appendChild(t);}t.textContent=msg;t.className="toast "+(type||"");requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add("show")));clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),dur);};
+
+// card html
+window.mkCard=(l)=>{
+  const fav=JSON.parse(localStorage.getItem("cffavs")||"[]").includes(l.id);
+  const ts=l.createdAt?.toDate?l.createdAt.toDate():new Date(l.createdAt||0);
+  const isNew=(Date.now()-ts.getTime())<86400000*3;
+  return `<div class="lcard" onclick="go('listing.html?id=${l.id}')">
+    ${isNew?'<span class="lcard-new">Nouveau</span>':''}
+    <button class="lcard-fav${fav?' on':''}" onclick="event.stopPropagation();toggleFav('${l.id}',this)">${fav?'♥':'♡'}</button>
+    <div class="lcard-img-wrap"><img class="lcard-img" src="${l.image||'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&q=75'}" loading="lazy" alt="${l.title}"/></div>
+    <div class="lcard-body">
+      <span class="lcard-type">${l.type||'Logement'}</span>
+      <div class="lcard-title">${l.title}</div>
+      <div class="lcard-city">📍 ${l.city}</div>
+      <div class="lcard-foot">
+        <div class="lcard-price">${l.price}€ <s>/mois</s></div>
+        <div class="lcard-colos">👥 ${l.colos} coloc${l.colos>1?'s':''}</div>
+      </div>
+    </div>
+  </div>`;
+};
+
+window.toggleFav=(id,btn)=>{
+  const f=JSON.parse(localStorage.getItem("cffavs")||"[]");
+  const i=f.indexOf(id);
+  if(i===-1){f.push(id);btn.textContent="♥";btn.classList.add("on");toast("♥ Ajouté aux favoris","suc");}
+  else{f.splice(i,1);btn.textContent="♡";btn.classList.remove("on");toast("Retiré des favoris","");}
+  localStorage.setItem("cffavs",JSON.stringify(f));updFavBdg();
+};
+
+// seed + load all
+async function seedIfEmpty(){try{const s=await getDocs(query(collection(db,"listings"),limit(1)));if(s.empty)for(const d of DEMO)await addDoc(collection(db,"listings"),{...d,createdAt:serverTimestamp()});}catch(e){}}
+window.loadListings=async()=>{
+  await seedIfEmpty();
+  try{const s=await getDocs(query(collection(db,"listings"),orderBy("createdAt","desc")));return s.empty?DEMO:s.docs.map(d=>({id:d.id,...d.data()}));}
+  catch(e){return DEMO;}
+};
+window.db=db;window.auth=auth;window.DEMO=DEMO;
+window.fmtErr=(e)=>{const c=e.code||"";if(c.includes("user-not-found")||c.includes("wrong-password")||c.includes("invalid-credential"))return"Email ou mot de passe incorrect.";if(c.includes("email-already-in-use"))return"Email déjà utilisé.";if(c.includes("weak-password"))return"Mot de passe trop court (min. 6).";return e.message||"Erreur.";};
+
+
+import{updateProfile,updateEmail,updatePassword,EmailAuthProvider,reauthenticateWithCredential}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+window.onAuthReady=async(u)=>{
+  if(!u){go("auth.html");return;}
+  const init=(u.displayName||u.email||"?").charAt(0).toUpperCase();
+  document.getElementById("pav-txt").textContent=init;
+  document.getElementById("pname").textContent=u.displayName||"Utilisateur";
+  document.getElementById("pemail").textContent=u.email;
+  document.getElementById("s-name").value=u.displayName||"";
+  document.getElementById("s-email").value=u.email||"";
+  const since=u.metadata?.creationTime?new Date(u.metadata.creationTime).toLocaleDateString("fr",{year:"numeric",month:"long"}):"Récemment";
+  document.getElementById("p-since").textContent="Membre depuis "+since;
+  await loadMine(u.uid);
+  await loadStats(u.uid);
+};
+
+async function loadMine(uid){
+  try{
+    const s=await getDocs(query(collection(db,"listings"),where("authorId","==",uid)));
+    const items=s.docs.map(d=>({id:d.id,...d.data()}));
+    document.getElementById("pstat-ann").textContent=items.length;
+    const g=document.getElementById("mine-grid"),ne=document.getElementById("mine-empty");
+    if(!items.length){g.innerHTML="";ne.classList.remove("hidden");}
+    else{ne.classList.add("hidden");g.innerHTML=items.map(mkCard).join("");}
+  }catch(e){}
+}
+async function loadStats(uid){
+  const favs=JSON.parse(localStorage.getItem("cffavs")||"[]");
+  document.getElementById("pstat-fav").textContent=favs.length;
+  try{const s=await getDocs(query(collection(db,"conversations"),where("participants","array-contains",uid)));document.getElementById("pstat-msg").textContent=s.size;}catch(e){}
+}
+
+window.showTab=(t,btn)=>{
+  document.querySelectorAll(".ptab").forEach(b=>b.classList.remove("on"));btn.classList.add("on");
+  ["tab-ann","tab-favs","tab-settings","tab-notifs"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+  document.getElementById("tab-"+t).classList.remove("hidden");
+  if(t==="favs")loadFavTab();
+  if(t==="notifs")loadNotifs();
+};
+
+function loadFavTab(){
+  const favs=JSON.parse(localStorage.getItem("cffavs")||"[]");
+  const g=document.getElementById("favs-grid"),ne=document.getElementById("favs-empty");
+  loadListings().then(all=>{
+    const items=all.filter(l=>favs.includes(l.id));
+    if(!items.length){g.innerHTML="";ne.classList.remove("hidden");}
+    else{ne.classList.add("hidden");g.innerHTML=items.map(mkCard).join("");}
+  });
+}
+
+function loadNotifs(){
+  const notifs=[
+    {ico:"💬",txt:"Nouveau message reçu pour votre annonce <b>T4 Bastille</b>",time:"Il y a 2 heures",unread:true},
+    {ico:"♥",txt:"Quelqu'un a ajouté votre annonce à ses favoris",time:"Hier",unread:true},
+    {ico:"✅",txt:"Votre annonce a été publiée avec succès",time:"Il y a 3 jours",unread:false},
+    {ico:"🔔",txt:"Bienvenue sur ColocFinder ! Commencez à explorer.",time:"Il y a 5 jours",unread:false},
+  ];
+  document.getElementById("notif-list").innerHTML=notifs.map(n=>`<div class="notif${n.unread?" unread":""}"><span class="notif-ico">${n.ico}</span><div class="notif-body"><div class="notif-txt">${n.txt}</div><div class="notif-time">${n.time}</div></div></div>`).join("");
+}
+
+window.saveProfile=async()=>{
+  const u=getUser();if(!u)return;
+  const name=document.getElementById("s-name").value.trim();
+  if(!name){toast("Entre ton nom","err");return;}
+  try{await updateProfile(u,{displayName:name});await setDoc(doc(db,"users",u.uid),{displayName:name},{merge:true});document.getElementById("pname").textContent=name;toast("Profil mis à jour !","suc");}
+  catch(e){toast(e.message,"err");}
+};
+window.savePwd=async()=>{
+  const u=getUser();if(!u)return;
+  const cur=document.getElementById("s-curpwd").value,np=document.getElementById("s-newpwd").value,np2=document.getElementById("s-newpwd2").value;
+  if(!cur||!np||!np2){toast("Remplis tous les champs","err");return;}
+  if(np!==np2){toast("Les mots de passe ne correspondent pas","err");return;}
+  if(np.length<8){toast("Mot de passe trop court","err");return;}
+  try{
+    const cred=EmailAuthProvider.credential(u.email,cur);
+    await reauthenticateWithCredential(u,cred);
+    await updatePassword(u,np);
+    document.getElementById("s-curpwd").value="";document.getElementById("s-newpwd").value="";document.getElementById("s-newpwd2").value="";
+    toast("Mot de passe mis à jour !","suc");
+  }catch(e){toast(fmtErr(e),"err");}
+};
+
+</script>
+</body>
+</html>
