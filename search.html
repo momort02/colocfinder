@@ -1,321 +1,683 @@
 <!DOCTYPE html>
 <html lang="fr" data-theme="dark">
+
 <head>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Rechercher — ColocFinder</title>
-<link rel="stylesheet" href="style.css"/>
-<style>
-.shtop{background:var(--bg2);border-bottom:1px solid var(--bd);padding:32px 0 0}
-.shtop h1{font-family:var(--ff);font-size:1.75rem;font-weight:800;margin-bottom:5px}
-.shtop p{color:var(--tx2);font-size:.9rem;margin-bottom:22px}
-.search-bar{display:flex;background:var(--sf);border:1px solid var(--bd2);border-radius:13px;padding:5px;box-shadow:var(--sh);gap:0}
-.sbf{flex:1;display:flex;align-items:center;gap:9px;padding:10px 14px;border-right:1px solid var(--bd)}
-.sbf:last-of-type{border-right:none}
-.sbf svg{color:var(--tx3);flex-shrink:0}
-.sbf input,.sbf select{background:none;border:none;outline:none;color:var(--tx);font-family:var(--fb);font-size:.88rem;width:100%}
-.sbf select option{background:var(--sf)}
-.btn-go{background:linear-gradient(135deg,var(--ac),var(--ac2));border:none;color:#fff;font-weight:700;font-size:.88rem;padding:11px 20px;border-radius:10px;cursor:pointer;transition:var(--tr);font-family:var(--fb);display:flex;align-items:center;gap:7px;white-space:nowrap}
-.btn-go:hover{filter:brightness(1.12);transform:scale(1.02)}
-.stabs{display:flex;gap:0;border-bottom:2px solid var(--bd);margin-top:22px}
-.stab{padding:11px 18px;font-size:.86rem;font-weight:600;color:var(--tx2);cursor:pointer;border:none;background:none;font-family:var(--fb);border-bottom:2px solid transparent;margin-bottom:-2px;transition:var(--tr)}
-.stab:hover{color:var(--tx)}.stab.on{color:var(--ac);border-bottom-color:var(--ac)}
-/* LAYOUT */
-.slay{display:grid;grid-template-columns:275px 1fr;gap:26px;max-width:1280px;margin:0 auto;padding:26px 26px 80px;align-items:start}
-/* FILTERS */
-.fpanel{background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;position:sticky;top:calc(var(--nav)+18px)}
-.fp-hd{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid var(--bd)}
-.fp-hd h3{font-family:var(--ff);font-size:.95rem;font-weight:700}
-.btn-clr{font-size:.76rem;color:var(--ac);background:none;border:none;cursor:pointer;font-family:var(--fb);font-weight:500}
-.fp-sec{padding:16px 20px;border-bottom:1px solid var(--bd)}
-.fp-sec:last-child{border-bottom:none}
-.fp-sec label{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx2);display:block;margin-bottom:10px}
-.fp-sec input[type=text]{width:100%;padding:9px 13px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:var(--rs);color:var(--tx);font-family:var(--fb);font-size:.87rem;outline:none;transition:var(--tr)}
-.fp-sec input:focus{border-color:var(--ac)}
-.fp-sec select{width:100%;padding:9px 13px;background:var(--bg2);border:1.5px solid var(--bd2);border-radius:var(--rs);color:var(--tx);font-family:var(--fb);font-size:.87rem;outline:none;cursor:pointer;appearance:none;transition:var(--tr)}
-.fp-sec select:focus{border-color:var(--ac)}
-.fp-sec select option{background:var(--sf)}
-.range-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;font-size:.82rem}
-.range-v{color:var(--ac);font-weight:700}
-input[type=range]{width:100%;accent-color:var(--ac)}
-/* RESULTS */
-.res-hd{display:flex;align-items:center;gap:10px;margin-bottom:20px;flex-wrap:wrap}
-.res-ct{font-family:var(--ff);font-size:1.1rem;font-weight:700;flex:1}
-.res-ct span{color:var(--ac)}
-.sort-sel{padding:8px 13px;background:var(--sf);border:1px solid var(--bd2);border-radius:var(--rs);color:var(--tx);font-family:var(--fb);font-size:.83rem;outline:none;cursor:pointer}
-.sort-sel:focus{border-color:var(--ac)}
-.vbtns{display:flex;gap:3px}
-.vb{width:34px;height:34px;background:var(--sf);border:1px solid var(--bd2);border-radius:var(--rs);cursor:pointer;color:var(--tx2);font-size:.88rem;display:grid;place-items:center;transition:var(--tr)}
-.vb.on{background:var(--ac);border-color:var(--ac);color:#fff}
-.btn-flt{display:none;padding:8px 14px;border-radius:var(--rs);background:var(--sf);border:1px solid var(--bd2);color:var(--tx2);font-size:.82rem;cursor:pointer;font-family:var(--fb)}
-.norec{text-align:center;padding:72px 20px;color:var(--tx2)}
-.norec .ico{font-size:3.2rem;margin-bottom:16px;display:block}
-.norec h3{font-family:var(--ff);font-size:1.3rem;margin-bottom:9px;color:var(--tx)}
-/* MAP */
-#mapbox{height:calc(100vh - 280px);border-radius:var(--r);border:1px solid var(--bd);display:none}
-@media(max-width:1024px){.slay{grid-template-columns:1fr}.fpanel{position:static;display:none}.fpanel.open{display:block}.btn-flt{display:block}}
-@media(max-width:640px){.search-bar{flex-direction:column}.sbf{border-right:none;border-bottom:1px solid var(--bd)}.sbf:last-of-type{border-bottom:none}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Rechercher — ColocFinder</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .shtop {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--bd);
+      padding: 32px 0 0
+    }
+
+    .shtop h1 {
+      font-family: var(--ff);
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: 5px
+    }
+
+    .shtop p {
+      color: var(--tx2);
+      font-size: .9rem;
+      margin-bottom: 22px
+    }
+
+    .search-bar {
+      display: flex;
+      background: var(--sf);
+      border: 1px solid var(--bd2);
+      border-radius: 13px;
+      padding: 5px;
+      box-shadow: var(--sh);
+      gap: 0
+    }
+
+    .sbf {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 10px 14px;
+      border-right: 1px solid var(--bd)
+    }
+
+    .sbf:last-of-type {
+      border-right: none
+    }
+
+    .sbf svg {
+      color: var(--tx3);
+      flex-shrink: 0
+    }
+
+    .sbf input,
+    .sbf select {
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--tx);
+      font-family: var(--fb);
+      font-size: .88rem;
+      width: 100%
+    }
+
+    .sbf select option {
+      background: var(--sf)
+    }
+
+    .btn-go {
+      background: linear-gradient(135deg, var(--ac), var(--ac2));
+      border: none;
+      color: #fff;
+      font-weight: 700;
+      font-size: .88rem;
+      padding: 11px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--tr);
+      font-family: var(--fb);
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap
+    }
+
+    .btn-go:hover {
+      filter: brightness(1.12);
+      transform: scale(1.02)
+    }
+
+    .stabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--bd);
+      margin-top: 22px
+    }
+
+    .stab {
+      padding: 11px 18px;
+      font-size: .86rem;
+      font-weight: 600;
+      color: var(--tx2);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: var(--fb);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: var(--tr)
+    }
+
+    .stab:hover {
+      color: var(--tx)
+    }
+
+    .stab.on {
+      color: var(--ac);
+      border-bottom-color: var(--ac)
+    }
+
+    /* LAYOUT */
+    .slay {
+      display: grid;
+      grid-template-columns: 275px 1fr;
+      gap: 26px;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 26px 26px 80px;
+      align-items: start
+    }
+
+    /* FILTERS */
+    .fpanel {
+      background: var(--sf);
+      border: 1px solid var(--bd);
+      border-radius: var(--r);
+      overflow: hidden;
+      position: sticky;
+      top: calc(var(--nav)+18px)
+    }
+
+    .fp-hd {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--bd)
+    }
+
+    .fp-hd h3 {
+      font-family: var(--ff);
+      font-size: .95rem;
+      font-weight: 700
+    }
+
+    .btn-clr {
+      font-size: .76rem;
+      color: var(--ac);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--fb);
+      font-weight: 500
+    }
+
+    .fp-sec {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--bd)
+    }
+
+    .fp-sec:last-child {
+      border-bottom: none
+    }
+
+    .fp-sec label {
+      font-size: .73rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--tx2);
+      display: block;
+      margin-bottom: 10px
+    }
+
+    .fp-sec input[type=text] {
+      width: 100%;
+      padding: 9px 13px;
+      background: var(--bg2);
+      border: 1.5px solid var(--bd2);
+      border-radius: var(--rs);
+      color: var(--tx);
+      font-family: var(--fb);
+      font-size: .87rem;
+      outline: none;
+      transition: var(--tr)
+    }
+
+    .fp-sec input:focus {
+      border-color: var(--ac)
+    }
+
+    .fp-sec select {
+      width: 100%;
+      padding: 9px 13px;
+      background: var(--bg2);
+      border: 1.5px solid var(--bd2);
+      border-radius: var(--rs);
+      color: var(--tx);
+      font-family: var(--fb);
+      font-size: .87rem;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+      transition: var(--tr)
+    }
+
+    .fp-sec select:focus {
+      border-color: var(--ac)
+    }
+
+    .fp-sec select option {
+      background: var(--sf)
+    }
+
+    .range-hd {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 7px;
+      font-size: .82rem
+    }
+
+    .range-v {
+      color: var(--ac);
+      font-weight: 700
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--ac)
+    }
+
+    /* RESULTS */
+    .res-hd {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap
+    }
+
+    .res-ct {
+      font-family: var(--ff);
+      font-size: 1.1rem;
+      font-weight: 700;
+      flex: 1
+    }
+
+    .res-ct span {
+      color: var(--ac)
+    }
+
+    .sort-sel {
+      padding: 8px 13px;
+      background: var(--sf);
+      border: 1px solid var(--bd2);
+      border-radius: var(--rs);
+      color: var(--tx);
+      font-family: var(--fb);
+      font-size: .83rem;
+      outline: none;
+      cursor: pointer
+    }
+
+    .sort-sel:focus {
+      border-color: var(--ac)
+    }
+
+    .vbtns {
+      display: flex;
+      gap: 3px
+    }
+
+    .vb {
+      width: 34px;
+      height: 34px;
+      background: var(--sf);
+      border: 1px solid var(--bd2);
+      border-radius: var(--rs);
+      cursor: pointer;
+      color: var(--tx2);
+      font-size: .88rem;
+      display: grid;
+      place-items: center;
+      transition: var(--tr)
+    }
+
+    .vb.on {
+      background: var(--ac);
+      border-color: var(--ac);
+      color: #fff
+    }
+
+    .btn-flt {
+      display: none;
+      padding: 8px 14px;
+      border-radius: var(--rs);
+      background: var(--sf);
+      border: 1px solid var(--bd2);
+      color: var(--tx2);
+      font-size: .82rem;
+      cursor: pointer;
+      font-family: var(--fb)
+    }
+
+    .norec {
+      text-align: center;
+      padding: 72px 20px;
+      color: var(--tx2)
+    }
+
+    .norec .ico {
+      font-size: 3.2rem;
+      margin-bottom: 16px;
+      display: block
+    }
+
+    .norec h3 {
+      font-family: var(--ff);
+      font-size: 1.3rem;
+      margin-bottom: 9px;
+      color: var(--tx)
+    }
+
+    /* MAP */
+    #mapbox {
+      height: calc(100vh - 280px);
+      border-radius: var(--r);
+      border: 1px solid var(--bd);
+      display: none
+    }
+
+    @media(max-width:1024px) {
+      .slay {
+        grid-template-columns: 1fr
+      }
+
+      .fpanel {
+        position: static;
+        display: none
+      }
+
+      .fpanel.open {
+        display: block
+      }
+
+      .btn-flt {
+        display: block
+      }
+    }
+
+    @media(max-width:640px) {
+      .search-bar {
+        flex-direction: column
+      }
+
+      .sbf {
+        border-right: none;
+        border-bottom: 1px solid var(--bd)
+      }
+
+      .sbf:last-of-type {
+        border-bottom: none
+      }
+    }
+  </style>
 </head>
+
 <body data-page="search">
-<nav class="nav" id="mainnav">
-  <div class="nav-inner">
-    <div class="logo" onclick="go('index.html')">
-      <div class="logo-icon">🏠</div>
-      <div class="logo-name">Coloc<b>Finder</b></div>
+  <nav class="nav" id="mainnav">
+    <div class="nav-inner">
+      <div class="logo" onclick="go('index.html')">
+        <div class="logo-icon">🏠</div>
+        <div class="logo-name">Coloc<b>Finder</b></div>
+      </div>
+      <div class="nav-links" id="navlinks">
+        <a class="nl" href="index.html" data-p="home">Accueil</a>
+        <a class="nl" href="search.html" data-p="search">🔍 Rechercher</a>
+        <a class="nl" href="post.html" data-p="post">+ Publier</a>
+        <a class="nl" href="messages.html" data-p="messages">💬 Messages</a>
+        <a class="nl" href="favorites.html" data-p="favs">♡ Favoris <span class="bdg" id="fbdg"
+            style="display:none">0</span></a>
+      </div>
+      <div class="nav-r">
+        <button class="btn-theme" id="btheme" onclick="toggleTheme()">☀</button>
+        <button class="btn-out hidden" id="nb-login" onclick="go('auth.html')">Connexion</button>
+        <button class="btn-in hidden" id="nb-reg" onclick="go('auth.html?t=reg')">S'inscrire</button>
+        <div class="nav-av hidden" id="nav-av" onclick="go('profile.html')"></div>
+        <button class="btn-out hidden" id="nb-out" onclick="doLogout()">Déco</button>
+      </div>
+      <button class="hamburger" onclick="toggleMob()">☰</button>
     </div>
-    <div class="nav-links" id="navlinks">
-      <a class="nl" href="index.html" data-p="home">Accueil</a>
-      <a class="nl" href="search.html" data-p="search">🔍 Rechercher</a>
-      <a class="nl" href="post.html" data-p="post">+ Publier</a>
-      <a class="nl" href="messages.html" data-p="messages">💬 Messages</a>
-      <a class="nl" href="favorites.html" data-p="favs">♡ Favoris <span class="bdg" id="fbdg" style="display:none">0</span></a>
+    <div class="mob-nav" id="mobnav">
+      <a href="index.html">🏠 Accueil</a>
+      <a href="search.html">🔍 Rechercher</a>
+      <a href="post.html">+ Publier</a>
+      <a href="messages.html">💬 Messages</a>
+      <a href="favorites.html">♡ Favoris</a>
+      <hr>
+      <a id="mob-login" href="auth.html">Connexion / Inscription</a>
+      <a id="mob-prof" class="hidden" href="profile.html">Mon profil</a>
+      <a id="mob-out" class="hidden" href="#" onclick="doLogout();return false">Déconnexion</a>
     </div>
-    <div class="nav-r">
-      <button class="btn-theme" id="btheme" onclick="toggleTheme()">☀</button>
-      <button class="btn-out hidden" id="nb-login" onclick="go('auth.html')">Connexion</button>
-      <button class="btn-in hidden" id="nb-reg" onclick="go('auth.html?t=reg')">S'inscrire</button>
-      <div class="nav-av hidden" id="nav-av" onclick="go('profile.html')"></div>
-      <button class="btn-out hidden" id="nb-out" onclick="doLogout()">Déco</button>
-    </div>
-    <button class="hamburger" onclick="toggleMob()">☰</button>
-  </div>
-  <div class="mob-nav" id="mobnav">
-    <a href="index.html">🏠 Accueil</a>
-    <a href="search.html">🔍 Rechercher</a>
-    <a href="post.html">+ Publier</a>
-    <a href="messages.html">💬 Messages</a>
-    <a href="favorites.html">♡ Favoris</a>
-    <hr>
-    <a id="mob-login" href="auth.html">Connexion / Inscription</a>
-    <a id="mob-prof" class="hidden" href="profile.html">Mon profil</a>
-    <a id="mob-out" class="hidden" href="#" onclick="doLogout();return false">Déconnexion</a>
-  </div>
-</nav>
-<div class="page-top">
+  </nav>
+  <div class="page-top">
 
-<div class="shtop"><div class="container">
-  <h1>Trouver une colocation</h1>
-  <p><span id="total">...</span> annonces disponibles partout en France</p>
-  <div class="search-bar">
-    <div class="sbf"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><input type="text" id="sb-city" placeholder="Ville..."/></div>
-    <div class="sbf"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><input type="number" id="sb-budget" placeholder="Budget max €/mois"/></div>
-    <button class="btn-go" onclick="doSearch()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>Rechercher</button>
-  </div>
-  <div class="stabs">
-    <button class="stab on" onclick="setTab(this,'list')">📋 Liste</button>
-    <button class="stab" onclick="setTab(this,'map')">🗺️ Carte</button>
-  </div>
-</div></div>
-
-<div class="slay">
-  <aside class="fpanel" id="fpanel">
-    <div class="fp-hd"><h3>Filtres</h3><button class="btn-clr" onclick="clearF()">Tout effacer</button></div>
-    <div class="fp-sec"><label>Ville</label><input type="text" id="f-city" placeholder="Paris, Lyon..." oninput="applyFilters()"/></div>
-    <div class="fp-sec"><label>Budget mensuel</label>
-      <div class="range-hd"><span style="font-size:.82rem;color:var(--tx2)">100€</span><span class="range-v" id="bval">2000€/mois</span></div>
-      <input type="range" id="f-budget" min="100" max="2000" value="2000" step="50" oninput="updB();applyFilters()"/>
-    </div>
-    <div class="fp-sec"><label>Type de logement</label>
-      <div class="chips" id="cht">
-        <button class="chip on" data-v="" onclick="sc(this,'cht');applyFilters()">Tous</button>
-        <button class="chip" data-v="Appartement" onclick="sc(this,'cht');applyFilters()">Appart</button>
-        <button class="chip" data-v="Maison" onclick="sc(this,'cht');applyFilters()">Maison</button>
-        <button class="chip" data-v="Studio" onclick="sc(this,'cht');applyFilters()">Studio</button>
+    <div class="shtop">
+      <div class="container">
+        <h1>Trouver une colocation</h1>
+        <p><span id="total">...</span> annonces disponibles partout en France</p>
+        <div class="search-bar">
+          <div class="sbf"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+              <circle cx="12" cy="10" r="3" />
+            </svg><input type="text" id="sb-city" placeholder="Ville..." /></div>
+          <div class="sbf"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2">
+              <line x1="12" y1="1" x2="12" y2="23" />
+              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+            </svg><input type="number" id="sb-budget" placeholder="Budget max €/mois" /></div>
+          <button class="btn-go" onclick="doSearch()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>Rechercher</button>
+        </div>
+        <div class="stabs">
+          <button class="stab on" onclick="setTab(this,'list')">📋 Liste</button>
+          <button class="stab" onclick="setTab(this,'map')">🗺️ Carte</button>
+        </div>
       </div>
     </div>
-    <div class="fp-sec"><label>Colocataires</label>
-      <div class="chips" id="chc">
-        <button class="chip on" data-v="0" onclick="sc(this,'chc');applyFilters()">Tous</button>
-        <button class="chip" data-v="2" onclick="sc(this,'chc');applyFilters()">2</button>
-        <button class="chip" data-v="3" onclick="sc(this,'chc');applyFilters()">3</button>
-        <button class="chip" data-v="4" onclick="sc(this,'chc');applyFilters()">4+</button>
+
+    <div class="slay">
+      <aside class="fpanel" id="fpanel">
+        <div class="fp-hd">
+          <h3>Filtres</h3><button class="btn-clr" onclick="clearF()">Tout effacer</button>
+        </div>
+        <div class="fp-sec"><label>Ville</label><input type="text" id="f-city" placeholder="Paris, Lyon..."
+            oninput="applyFilters()" /></div>
+        <div class="fp-sec"><label>Budget mensuel</label>
+          <div class="range-hd"><span style="font-size:.82rem;color:var(--tx2)">100€</span><span class="range-v"
+              id="bval">2000€/mois</span></div>
+          <input type="range" id="f-budget" min="100" max="2000" value="2000" step="50"
+            oninput="updB();applyFilters()" />
+        </div>
+        <div class="fp-sec"><label>Type de logement</label>
+          <div class="chips" id="cht">
+            <button class="chip on" data-v="" onclick="sc(this,'cht');applyFilters()">Tous</button>
+            <button class="chip" data-v="Appartement" onclick="sc(this,'cht');applyFilters()">Appart</button>
+            <button class="chip" data-v="Maison" onclick="sc(this,'cht');applyFilters()">Maison</button>
+            <button class="chip" data-v="Studio" onclick="sc(this,'cht');applyFilters()">Studio</button>
+          </div>
+        </div>
+        <div class="fp-sec"><label>Colocataires</label>
+          <div class="chips" id="chc">
+            <button class="chip on" data-v="0" onclick="sc(this,'chc');applyFilters()">Tous</button>
+            <button class="chip" data-v="2" onclick="sc(this,'chc');applyFilters()">2</button>
+            <button class="chip" data-v="3" onclick="sc(this,'chc');applyFilters()">3</button>
+            <button class="chip" data-v="4" onclick="sc(this,'chc');applyFilters()">4+</button>
+          </div>
+        </div>
+        <div class="fp-sec"><label>Trier par</label>
+          <select id="f-sort" onchange="applyFilters()">
+            <option value="recent">Plus récents</option>
+            <option value="asc">Prix croissant</option>
+            <option value="desc">Prix décroissant</option>
+          </select>
+        </div>
+      </aside>
+      <div>
+        <div class="res-hd" id="res-hd">
+          <div class="res-ct"><span id="rcount">0</span> annonces</div>
+          <select class="sort-sel" onchange="document.getElementById('f-sort').value=this.value;applyFilters()">
+            <option value="recent">Plus récents</option>
+            <option value="asc">Prix ↑</option>
+            <option value="desc">Prix ↓</option>
+          </select>
+          <div class="vbtns">
+            <button class="vb on" id="vb1" onclick="setView('grid')" title="Grille">⊞</button>
+            <button class="vb" id="vb2" onclick="setView('lv')" title="Liste">☰</button>
+          </div>
+          <button class="btn-flt" onclick="document.getElementById('fpanel').classList.toggle('open')">⚙
+            Filtres</button>
+        </div>
+        <div class="cards-grid" id="rgrid">
+          <div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--tx2)">
+            <div class="spin"></div>
+            <p style="margin-top:12px">Chargement...</p>
+          </div>
+        </div>
+        <div id="mapbox"></div>
+        <div id="norec" class="norec hidden"><span class="ico">🔍</span>
+          <h3>Aucun résultat</h3>
+          <p>Essaie d'élargir tes critères.</p><button class="btn-prim" onclick="clearF()"
+            style="margin-top:18px">Réinitialiser</button>
+        </div>
       </div>
     </div>
-    <div class="fp-sec"><label>Trier par</label>
-      <select id="f-sort" onchange="applyFilters()"><option value="recent">Plus récents</option><option value="asc">Prix croissant</option><option value="desc">Prix décroissant</option></select>
-    </div>
-  </aside>
-  <div>
-    <div class="res-hd" id="res-hd">
-      <div class="res-ct"><span id="rcount">0</span> annonces</div>
-      <select class="sort-sel" onchange="document.getElementById('f-sort').value=this.value;applyFilters()"><option value="recent">Plus récents</option><option value="asc">Prix ↑</option><option value="desc">Prix ↓</option></select>
-      <div class="vbtns">
-        <button class="vb on" id="vb1" onclick="setView('grid')" title="Grille">⊞</button>
-        <button class="vb" id="vb2" onclick="setView('lv')" title="Liste">☰</button>
-      </div>
-      <button class="btn-flt" onclick="document.getElementById('fpanel').classList.toggle('open')">⚙ Filtres</button>
-    </div>
-    <div class="cards-grid" id="rgrid"><div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--tx2)"><div class="spin"></div><p style="margin-top:12px">Chargement...</p></div></div>
-    <div id="mapbox"></div>
-    <div id="norec" class="norec hidden"><span class="ico">🔍</span><h3>Aucun résultat</h3><p>Essaie d'élargir tes critères.</p><button class="btn-prim" onclick="clearF()" style="margin-top:18px">Réinitialiser</button></div>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
   </div>
-</div>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <div id="cf-toast" class="toast"></div>
+  <script type="module">
 
-</div>
-<div id="cf-toast" class="toast"></div>
-<script type="module">
+    const FB_CFG = { apiKey: "AIzaSyBQJ5dwmDfne7rNPOa_GTDMvBFaTPa13Is", authDomain: "colocfinder-71330.firebaseapp.com", projectId: "colocfinder-71330", storageBucket: "colocfinder-71330.firebasestorage.app", messagingSenderId: "242073346696", appId: "1:242073346696:web:c0410d1c95411c3953b53d" };
 
-const FB_CFG={apiKey:"AIzaSyBQJ5dwmDfne7rNPOa_GTDMvBFaTPa13Is",authDomain:"colocfinder-71330.firebaseapp.com",projectId:"colocfinder-71330",storageBucket:"colocfinder-71330.firebasestorage.app",messagingSenderId:"242073346696",appId:"1:242073346696:web:c0410d1c95411c3953b53d"};
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, collection, getDocs, addDoc, getDoc, doc, query, orderBy, where, limit, onSnapshot, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import{getFirestore,collection,getDocs,addDoc,getDoc,doc,query,orderBy,where,limit,onSnapshot,setDoc,updateDoc,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    const app = initializeApp(FB_CFG);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let CU = null;
 
-const app=initializeApp(FB_CFG);
-const auth=getAuth(app);
-const db=getFirestore(app);
-let CU=null;
+    const DEMO = [
+      { id: "d1", title: "Grand T4 lumineux Bastille", city: "Paris", type: "Appartement", price: 620, colos: 3, surface: 95, desc: "Superbe appartement au cœur du 11e, à 5 min du métro Bastille. Salon spacieux, cuisine équipée, chambres lumineuses. Charges comprises.", image: "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80", lat: 48.853, lng: 2.369, authorName: "Sarah M.", authorId: "demo1", createdAt: { toDate: () => new Date() } },
+      { id: "d2", title: "Maison avec jardin Lyon 6e", city: "Lyon", type: "Maison", price: 450, colos: 4, surface: 130, desc: "Belle maison avec jardin en plein cœur de Lyon. 4 chambres, 2 SDB, jardin privatif. Ambiance conviviale.", image: "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=80", lat: 45.774, lng: 4.832, authorName: "Tom L.", authorId: "demo2", createdAt: { toDate: () => new Date() } },
+      { id: "d3", title: "Studio rénové Bordeaux Centre", city: "Bordeaux", type: "Studio", price: 380, colos: 2, surface: 45, desc: "Studio entièrement rénové à deux pas de la place de la Victoire. Idéal étudiants. Fibre incluse.", image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&q=80", lat: 44.836, lng: -0.580, authorName: "Julie B.", authorId: "demo3", createdAt: { toDate: () => new Date(Date.now() - 86400000) } },
+      { id: "d4", title: "T3 cosy Montmartre vue dégagée", city: "Paris", type: "Appartement", price: 700, colos: 2, surface: 70, desc: "Charmant appartement en plein Montmartre. 2 chambres, cuisine ouverte. Vue dégagée, 10 min de Pigalle.", image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=80", lat: 48.887, lng: 2.344, authorName: "Alex D.", authorId: "demo4", createdAt: { toDate: () => new Date(Date.now() - 172800000) } },
+      { id: "d5", title: "Villa partagée Marseille Prado", city: "Marseille", type: "Maison", price: 490, colos: 5, surface: 160, desc: "Grande villa en quartier calme. Piscine partagée, terrasse, jardin. Esprit festif mais respectueux.", image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=80", lat: 43.270, lng: 5.395, authorName: "Marc P.", authorId: "demo5", createdAt: { toDate: () => new Date(Date.now() - 259200000) } },
+      { id: "d6", title: "Appartement T3 Toulouse Capitole", city: "Toulouse", type: "Appartement", price: 410, colos: 3, surface: 80, desc: "Bel appartement lumineux à 2 min du Capitole. Cuisine moderne, chambres équipées. Ambiance zen.", image: "https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=700&q=80", lat: 43.604, lng: 1.444, authorName: "Lena V.", authorId: "demo6", createdAt: { toDate: () => new Date(Date.now() - 345600000) } },
+      { id: "d7", title: "Chambre étudiant Vieux-Lille", city: "Lille", type: "Appartement", price: 320, colos: 4, surface: 65, desc: "Super coloc dans le Vieux-Lille, proche de toutes les facs. 4 colocataires sympas, cuisine partagée.", image: "https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=700&q=80", lat: 50.629, lng: 3.057, authorName: "Camille R.", authorId: "demo7", createdAt: { toDate: () => new Date(Date.now() - 432000000) } },
+      { id: "d8", title: "Loft industriel Nantes Île", city: "Nantes", type: "Appartement", price: 550, colos: 3, surface: 110, desc: "Magnifique loft style industriel. Hauts plafonds, grandes fenêtres, à 5 min du tram.", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80", lat: 47.213, lng: -1.552, authorName: "Hugo F.", authorId: "demo8", createdAt: { toDate: () => new Date(Date.now() - 518400000) } },
+    ];
 
-const DEMO=[
-  {id:"d1",title:"Grand T4 lumineux Bastille",city:"Paris",type:"Appartement",price:620,colos:3,surface:95,desc:"Superbe appartement au cœur du 11e, à 5 min du métro Bastille. Salon spacieux, cuisine équipée, chambres lumineuses. Charges comprises.",image:"https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80",lat:48.853,lng:2.369,authorName:"Sarah M.",authorId:"demo1",createdAt:{toDate:()=>new Date()}},
-  {id:"d2",title:"Maison avec jardin Lyon 6e",city:"Lyon",type:"Maison",price:450,colos:4,surface:130,desc:"Belle maison avec jardin en plein cœur de Lyon. 4 chambres, 2 SDB, jardin privatif. Ambiance conviviale.",image:"https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=700&q=80",lat:45.774,lng:4.832,authorName:"Tom L.",authorId:"demo2",createdAt:{toDate:()=>new Date()}},
-  {id:"d3",title:"Studio rénové Bordeaux Centre",city:"Bordeaux",type:"Studio",price:380,colos:2,surface:45,desc:"Studio entièrement rénové à deux pas de la place de la Victoire. Idéal étudiants. Fibre incluse.",image:"https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=700&q=80",lat:44.836,lng:-0.580,authorName:"Julie B.",authorId:"demo3",createdAt:{toDate:()=>new Date(Date.now()-86400000)}},
-  {id:"d4",title:"T3 cosy Montmartre vue dégagée",city:"Paris",type:"Appartement",price:700,colos:2,surface:70,desc:"Charmant appartement en plein Montmartre. 2 chambres, cuisine ouverte. Vue dégagée, 10 min de Pigalle.",image:"https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&q=80",lat:48.887,lng:2.344,authorName:"Alex D.",authorId:"demo4",createdAt:{toDate:()=>new Date(Date.now()-172800000)}},
-  {id:"d5",title:"Villa partagée Marseille Prado",city:"Marseille",type:"Maison",price:490,colos:5,surface:160,desc:"Grande villa en quartier calme. Piscine partagée, terrasse, jardin. Esprit festif mais respectueux.",image:"https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=700&q=80",lat:43.270,lng:5.395,authorName:"Marc P.",authorId:"demo5",createdAt:{toDate:()=>new Date(Date.now()-259200000)}},
-  {id:"d6",title:"Appartement T3 Toulouse Capitole",city:"Toulouse",type:"Appartement",price:410,colos:3,surface:80,desc:"Bel appartement lumineux à 2 min du Capitole. Cuisine moderne, chambres équipées. Ambiance zen.",image:"https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=700&q=80",lat:43.604,lng:1.444,authorName:"Lena V.",authorId:"demo6",createdAt:{toDate:()=>new Date(Date.now()-345600000)}},
-  {id:"d7",title:"Chambre étudiant Vieux-Lille",city:"Lille",type:"Appartement",price:320,colos:4,surface:65,desc:"Super coloc dans le Vieux-Lille, proche de toutes les facs. 4 colocataires sympas, cuisine partagée.",image:"https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=700&q=80",lat:50.629,lng:3.057,authorName:"Camille R.",authorId:"demo7",createdAt:{toDate:()=>new Date(Date.now()-432000000)}},
-  {id:"d8",title:"Loft industriel Nantes Île",city:"Nantes",type:"Appartement",price:550,colos:3,surface:110,desc:"Magnifique loft style industriel. Hauts plafonds, grandes fenêtres, à 5 min du tram.",image:"https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=700&q=80",lat:47.213,lng:-1.552,authorName:"Hugo F.",authorId:"demo8",createdAt:{toDate:()=>new Date(Date.now()-518400000)}},
-];
+    // ── NAV SETUP ──
+    const th = localStorage.getItem("cfth") || "dark";
+    document.documentElement.dataset.theme = th;
+    document.getElementById("btheme").textContent = th === "dark" ? "☀" : "☽";
+    window.toggleTheme = () => { const d = document.documentElement.dataset.theme === "dark"; document.documentElement.dataset.theme = d ? "light" : "dark"; document.getElementById("btheme").textContent = d ? "☽" : "☀"; localStorage.setItem("cfth", d ? "light" : "dark"); };
+    window.toggleMob = () => document.getElementById("mobnav").classList.toggle("open");
+    window.go = (url) => window.location.href = url;
+    window.scrollTo && window.addEventListener("scroll", () => document.getElementById("mainnav").classList.toggle("scrolled", scrollY > 20));
 
-// ── NAV SETUP ──
-const th=localStorage.getItem("cfth")||"dark";
-document.documentElement.dataset.theme=th;
-document.getElementById("btheme").textContent=th==="dark"?"☀":"☽";
-window.toggleTheme=()=>{const d=document.documentElement.dataset.theme==="dark";document.documentElement.dataset.theme=d?"light":"dark";document.getElementById("btheme").textContent=d?"☽":"☀";localStorage.setItem("cfth",d?"light":"dark");};
-window.toggleMob=()=>document.getElementById("mobnav").classList.toggle("open");
-window.go=(url)=>window.location.href=url;
-window.scrollTo&&window.addEventListener("scroll",()=>document.getElementById("mainnav").classList.toggle("scrolled",scrollY>20));
+    // highlight active
+    const pg = document.body.dataset.page;
+    document.querySelectorAll(".nl[data-p]").forEach(el => el.classList.toggle("on", el.dataset.p === pg));
 
-// highlight active
-const pg=document.body.dataset.page;
-document.querySelectorAll(".nl[data-p]").forEach(el=>el.classList.toggle("on",el.dataset.p===pg));
+    // fav badge
+    function updFavBdg() { const f = JSON.parse(localStorage.getItem("cffavs") || "[]"), b = document.getElementById("fbdg"); if (b) { b.textContent = f.length; b.style.display = f.length ? "" : "none"; } }
+    updFavBdg();
 
-// fav badge
-function updFavBdg(){const f=JSON.parse(localStorage.getItem("cffavs")||"[]"),b=document.getElementById("fbdg");if(b){b.textContent=f.length;b.style.display=f.length?"":"none";}}
-updFavBdg();
+    // auth
+    onAuthStateChanged(auth, u => {
+      CU = u;
+      const lo = document.getElementById("nb-login"), re = document.getElementById("nb-reg"), out = document.getElementById("nb-out"), av = document.getElementById("nav-av");
+      const ml = document.getElementById("mob-login"), mp = document.getElementById("mob-prof"), mo = document.getElementById("mob-out");
+      if (u) {
+        lo.classList.add("hidden"); re.classList.add("hidden"); out.classList.remove("hidden"); av.classList.remove("hidden");
+        av.textContent = (u.displayName || u.email || "?").charAt(0).toUpperCase();
+        if (ml) ml.classList.add("hidden"); if (mp) mp.classList.remove("hidden"); if (mo) mo.classList.remove("hidden");
+      } else {
+        lo.classList.remove("hidden"); re.classList.remove("hidden"); out.classList.add("hidden"); av.classList.add("hidden");
+        if (ml) ml.classList.remove("hidden"); if (mp) mp.classList.add("hidden"); if (mo) mo.classList.add("hidden");
+      }
+      if (typeof onAuthReady === "function") onAuthReady(u);
+    });
+    window.doLogout = async () => { await signOut(auth); location.href = "index.html"; };
+    window.getUser = () => CU;
 
-// auth
-onAuthStateChanged(auth,u=>{
-  CU=u;
-  const lo=document.getElementById("nb-login"),re=document.getElementById("nb-reg"),out=document.getElementById("nb-out"),av=document.getElementById("nav-av");
-  const ml=document.getElementById("mob-login"),mp=document.getElementById("mob-prof"),mo=document.getElementById("mob-out");
-  if(u){
-    lo.classList.add("hidden");re.classList.add("hidden");out.classList.remove("hidden");av.classList.remove("hidden");
-    av.textContent=(u.displayName||u.email||"?").charAt(0).toUpperCase();
-    if(ml)ml.classList.add("hidden");if(mp)mp.classList.remove("hidden");if(mo)mo.classList.remove("hidden");
-  }else{
-    lo.classList.remove("hidden");re.classList.remove("hidden");out.classList.add("hidden");av.classList.add("hidden");
-    if(ml)ml.classList.remove("hidden");if(mp)mp.classList.add("hidden");if(mo)mo.classList.add("hidden");
-  }
-  if(typeof onAuthReady==="function")onAuthReady(u);
-});
-window.doLogout=async()=>{await signOut(auth);location.href="index.html";};
-window.getUser=()=>CU;
+    // toast
+    window.toast = (msg, type = "", dur = 3200) => { let t = document.getElementById("cf-toast"); if (!t) { t = document.createElement("div"); t.id = "cf-toast"; t.className = "toast"; document.body.appendChild(t); } t.textContent = msg; t.className = "toast " + (type || ""); requestAnimationFrame(() => requestAnimationFrame(() => t.classList.add("show"))); clearTimeout(t._t); t._t = setTimeout(() => t.classList.remove("show"), dur); };
 
-// toast
-window.toast=(msg,type="",dur=3200)=>{let t=document.getElementById("cf-toast");if(!t){t=document.createElement("div");t.id="cf-toast";t.className="toast";document.body.appendChild(t);}t.textContent=msg;t.className="toast "+(type||"");requestAnimationFrame(()=>requestAnimationFrame(()=>t.classList.add("show")));clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove("show"),dur);};
-
-// card html
-window.mkCard=(l)=>{
-  const fav=JSON.parse(localStorage.getItem("cffavs")||"[]").includes(l.id);
-  const ts=l.createdAt?.toDate?l.createdAt.toDate():new Date(l.createdAt||0);
-  const isNew=(Date.now()-ts.getTime())<86400000*3;
-  return `<div class="lcard" onclick="go('listing.html?id=${l.id}')">
-    ${isNew?'<span class="lcard-new">Nouveau</span>':''}
-    <button class="lcard-fav${fav?' on':''}" onclick="event.stopPropagation();toggleFav('${l.id}',this)">${fav?'♥':'♡'}</button>
-    <div class="lcard-img-wrap"><img class="lcard-img" src="${l.image||'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&q=75'}" loading="lazy" alt="${l.title}"/></div>
+    // card html
+    window.mkCard = (l) => {
+      const fav = JSON.parse(localStorage.getItem("cffavs") || "[]").includes(l.id);
+      const ts = l.createdAt?.toDate ? l.createdAt.toDate() : new Date(l.createdAt || 0);
+      const isNew = (Date.now() - ts.getTime()) < 86400000 * 3;
+      return `<div class="lcard" onclick="go('listing.html?id=${l.id}')">
+    ${isNew ? '<span class="lcard-new">Nouveau</span>' : ''}
+    <button class="lcard-fav${fav ? ' on' : ''}" onclick="event.stopPropagation();toggleFav('${l.id}',this)">${fav ? '♥' : '♡'}</button>
+    <div class="lcard-img-wrap"><img class="lcard-img" src="${l.image || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&q=75'}" loading="lazy" alt="${l.title}"/></div>
     <div class="lcard-body">
-      <span class="lcard-type">${l.type||'Logement'}</span>
+      <span class="lcard-type">${l.type || 'Logement'}</span>
       <div class="lcard-title">${l.title}</div>
       <div class="lcard-city">📍 ${l.city}</div>
       <div class="lcard-foot">
         <div class="lcard-price">${l.price}€ <s>/mois</s></div>
-        <div class="lcard-colos">👥 ${l.colos} coloc${l.colos>1?'s':''}</div>
+        <div class="lcard-colos">👥 ${l.colos} coloc${l.colos > 1 ? 's' : ''}</div>
       </div>
     </div>
   </div>`;
-};
+    };
 
-window.toggleFav=(id,btn)=>{
-  const f=JSON.parse(localStorage.getItem("cffavs")||"[]");
-  const i=f.indexOf(id);
-  if(i===-1){f.push(id);btn.textContent="♥";btn.classList.add("on");toast("♥ Ajouté aux favoris","suc");}
-  else{f.splice(i,1);btn.textContent="♡";btn.classList.remove("on");toast("Retiré des favoris","");}
-  localStorage.setItem("cffavs",JSON.stringify(f));updFavBdg();
-};
+    window.toggleFav = (id, btn) => {
+      const f = JSON.parse(localStorage.getItem("cffavs") || "[]");
+      const i = f.indexOf(id);
+      if (i === -1) { f.push(id); btn.textContent = "♥"; btn.classList.add("on"); toast("♥ Ajouté aux favoris", "suc"); }
+      else { f.splice(i, 1); btn.textContent = "♡"; btn.classList.remove("on"); toast("Retiré des favoris", ""); }
+      localStorage.setItem("cffavs", JSON.stringify(f)); updFavBdg();
+    };
 
-// seed + load all
-async function seedIfEmpty(){try{const s=await getDocs(query(collection(db,"listings"),limit(1)));if(s.empty)for(const d of DEMO)await addDoc(collection(db,"listings"),{...d,createdAt:serverTimestamp()});}catch(e){}}
-window.loadListings=async()=>{
-  await seedIfEmpty();
-  try{const s=await getDocs(query(collection(db,"listings"),orderBy("createdAt","desc")));return s.empty?DEMO:s.docs.map(d=>({id:d.id,...d.data()}));}
-  catch(e){return DEMO;}
-};
-window.db=db;window.auth=auth;window.DEMO=DEMO;
-window.fmtErr=(e)=>{const c=e.code||"";if(c.includes("user-not-found")||c.includes("wrong-password")||c.includes("invalid-credential"))return"Email ou mot de passe incorrect.";if(c.includes("email-already-in-use"))return"Email déjà utilisé.";if(c.includes("weak-password"))return"Mot de passe trop court (min. 6).";return e.message||"Erreur.";};
+    // seed + load all
+    async function seedIfEmpty() { try { const s = await getDocs(query(collection(db, "listings"), limit(1))); if (s.empty) for (const d of DEMO) await addDoc(collection(db, "listings"), { ...d, createdAt: serverTimestamp() }); } catch (e) { } }
+    window.loadListings = async () => {
+      await seedIfEmpty();
+      try { const s = await getDocs(query(collection(db, "listings"), orderBy("createdAt", "desc"))); return s.empty ? DEMO : s.docs.map(d => ({ id: d.id, ...d.data() })); }
+      catch (e) { return DEMO; }
+    };
+    window.db = db; window.auth = auth; window.DEMO = DEMO;
+    window.fmtErr = (e) => { const c = e.code || ""; if (c.includes("user-not-found") || c.includes("wrong-password") || c.includes("invalid-credential")) return "Email ou mot de passe incorrect."; if (c.includes("email-already-in-use")) return "Email déjà utilisé."; if (c.includes("weak-password")) return "Mot de passe trop court (min. 6)."; return e.message || "Erreur."; };
 
 
-let all=[],filtered=[],cview="grid",map=null,mapInit=false;
+    let all = [], filtered = [], cview = "grid", map = null, mapInit = false;
 
-async function init(){
-  all=await loadListings();
-  document.getElementById("total").textContent=all.length;
-  const p=new URLSearchParams(location.search);
-  if(p.get("city"))document.getElementById("f-city").value=p.get("city");
-  if(p.get("budget")){document.getElementById("f-budget").value=p.get("budget");updB();}
-  if(p.get("type"))document.querySelectorAll("#cht .chip").forEach(c=>c.classList.toggle("on",c.dataset.v===p.get("type")));
-  applyFilters();
-}
-init();
+    async function init() {
+      all = await loadListings();
+      document.getElementById("total").textContent = all.length;
+      const p = new URLSearchParams(location.search);
+      if (p.get("city")) document.getElementById("f-city").value = p.get("city");
+      if (p.get("budget")) { document.getElementById("f-budget").value = p.get("budget"); updB(); }
+      if (p.get("type")) document.querySelectorAll("#cht .chip").forEach(c => c.classList.toggle("on", c.dataset.v === p.get("type")));
+      applyFilters();
+    }
+    init();
 
-window.applyFilters=()=>{
-  const city=(document.getElementById("f-city").value||"").toLowerCase();
-  const budget=parseInt(document.getElementById("f-budget").value);
-  const type=document.querySelector("#cht .chip.on")?.dataset.v||"";
-  const colos=parseInt(document.querySelector("#chc .chip.on")?.dataset.v||0);
-  const sort=document.getElementById("f-sort").value;
-  filtered=all.filter(l=>{
-    if(city&&!l.city?.toLowerCase().includes(city))return false;
-    if(l.price>budget)return false;
-    if(type&&l.type!==type)return false;
-    if(colos>0&&(colos===4?l.colos<4:l.colos!==colos))return false;
-    return true;
-  });
-  if(sort==="asc")filtered.sort((a,b)=>a.price-b.price);
-  else if(sort==="desc")filtered.sort((a,b)=>b.price-a.price);
-  document.getElementById("rcount").textContent=filtered.length;
-  const g=document.getElementById("rgrid"),nr=document.getElementById("norec");
-  if(!filtered.length){g.innerHTML="";nr.classList.remove("hidden");}
-  else{nr.classList.add("hidden");g.innerHTML=filtered.map(mkCard).join("");if(cview==="lv")g.classList.add("lv");}
-  if(mapInit)refreshMap();
-};
-window.updB=()=>{document.getElementById("bval").textContent=document.getElementById("f-budget").value+"€/mois";};
-window.sc=(c,g)=>{document.querySelectorAll("#"+g+" .chip").forEach(x=>x.classList.remove("on"));c.classList.add("on");};
-window.clearF=()=>{document.getElementById("f-city").value="";document.getElementById("f-budget").value=2000;updB();document.querySelectorAll("#cht .chip").forEach((c,i)=>c.classList.toggle("on",i===0));document.querySelectorAll("#chc .chip").forEach((c,i)=>c.classList.toggle("on",i===0));document.getElementById("f-sort").value="recent";applyFilters();};
-window.doSearch=()=>{document.getElementById("f-city").value=document.getElementById("sb-city").value;const b=document.getElementById("sb-budget").value;if(b){document.getElementById("f-budget").value=b;updB();}applyFilters();};
-window.setView=(v)=>{cview=v;const g=document.getElementById("rgrid");g.className="cards-grid"+(v==="lv"?" lv":"");document.getElementById("vb1").classList.toggle("on",v==="grid");document.getElementById("vb2").classList.toggle("on",v==="lv");};
-window.setTab=(btn,mode)=>{
-  document.querySelectorAll(".stab").forEach(t=>t.classList.remove("on"));btn.classList.add("on");
-  document.getElementById("mapbox").style.display=mode==="map"?"block":"none";
-  document.getElementById("rgrid").style.display=mode==="map"?"none":"";
-  document.getElementById("res-hd").style.display=mode==="map"?"none":"";
-  if(mode==="map"&&!mapInit){initMap();}
-};
-function initMap(){
-  mapInit=true;
-  if(typeof L==="undefined")return;
-  map=L.map("mapbox").setView([46.5,2.3],6);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:18}).addTo(map);
-  refreshMap();
-}
-function refreshMap(){
-  if(!map)return;
-  map.eachLayer(l=>{if(l instanceof L.Marker)map.removeLayer(l);});
-  filtered.forEach(l=>{if(!l.lat||!l.lng)return;L.marker([l.lat,l.lng]).addTo(map).bindPopup(`<b>${l.title}</b><br>${l.city} — <strong>${l.price}€/mois</strong>`).on("click",()=>go("listing.html?id="+l.id));});
-}
+    window.applyFilters = () => {
+      const city = (document.getElementById("f-city").value || "").toLowerCase();
+      const budget = parseInt(document.getElementById("f-budget").value);
+      const type = document.querySelector("#cht .chip.on")?.dataset.v || "";
+      const colos = parseInt(document.querySelector("#chc .chip.on")?.dataset.v || 0);
+      const sort = document.getElementById("f-sort").value;
+      filtered = all.filter(l => {
+        if (city && !l.city?.toLowerCase().includes(city)) return false;
+        if (l.price > budget) return false;
+        if (type && l.type !== type) return false;
+        if (colos > 0 && (colos === 4 ? l.colos < 4 : l.colos !== colos)) return false;
+        return true;
+      });
+      if (sort === "asc") filtered.sort((a, b) => a.price - b.price);
+      else if (sort === "desc") filtered.sort((a, b) => b.price - a.price);
+      document.getElementById("rcount").textContent = filtered.length;
+      const g = document.getElementById("rgrid"), nr = document.getElementById("norec");
+      if (!filtered.length) { g.innerHTML = ""; nr.classList.remove("hidden"); }
+      else { nr.classList.add("hidden"); g.innerHTML = filtered.map(mkCard).join(""); if (cview === "lv") g.classList.add("lv"); }
+      if (mapInit) refreshMap();
+    };
+    window.updB = () => { document.getElementById("bval").textContent = document.getElementById("f-budget").value + "€/mois"; };
+    window.sc = (c, g) => { document.querySelectorAll("#" + g + " .chip").forEach(x => x.classList.remove("on")); c.classList.add("on"); };
+    window.clearF = () => { document.getElementById("f-city").value = ""; document.getElementById("f-budget").value = 2000; updB(); document.querySelectorAll("#cht .chip").forEach((c, i) => c.classList.toggle("on", i === 0)); document.querySelectorAll("#chc .chip").forEach((c, i) => c.classList.toggle("on", i === 0)); document.getElementById("f-sort").value = "recent"; applyFilters(); };
+    window.doSearch = () => { document.getElementById("f-city").value = document.getElementById("sb-city").value; const b = document.getElementById("sb-budget").value; if (b) { document.getElementById("f-budget").value = b; updB(); } applyFilters(); };
+    window.setView = (v) => { cview = v; const g = document.getElementById("rgrid"); g.className = "cards-grid" + (v === "lv" ? " lv" : ""); document.getElementById("vb1").classList.toggle("on", v === "grid"); document.getElementById("vb2").classList.toggle("on", v === "lv"); };
+    window.setTab = (btn, mode) => {
+      document.querySelectorAll(".stab").forEach(t => t.classList.remove("on")); btn.classList.add("on");
+      document.getElementById("mapbox").style.display = mode === "map" ? "block" : "none";
+      document.getElementById("rgrid").style.display = mode === "map" ? "none" : "";
+      document.getElementById("res-hd").style.display = mode === "map" ? "none" : "";
+      if (mode === "map" && !mapInit) { initMap(); }
+    };
+    function initMap() {
+      mapInit = true;
+      if (typeof L === "undefined") return;
+      map = L.map("mapbox").setView([46.5, 2.3], 6);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 18 }).addTo(map);
+      refreshMap();
+    }
+    function refreshMap() {
+      if (!map) return;
+      map.eachLayer(l => { if (l instanceof L.Marker) map.removeLayer(l); });
+      filtered.forEach(l => { if (!l.lat || !l.lng) return; L.marker([l.lat, l.lng]).addTo(map).bindPopup(`<b>${l.title}</b><br>${l.city} — <strong>${l.price}€/mois</strong>`).on("click", () => go("listing.html?id=" + l.id)); });
+    }
 
-</script>
+  </script>
 </body>
+
 </html>
