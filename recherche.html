@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rechercher une colocation — ColocMatch</title>
+  <meta name="description" content="Recherchez une colocation par ville, budget, équipements et affinités. Visualisez les annonces sur la carte." />
+  <link rel="icon" href="assets/favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/home.css" />
+  <link rel="stylesheet" href="css/recherche.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main>
+    <div class="container">
+      <div style="padding-top:24px;">
+        <h1 style="font-size:1.6rem;">Rechercher une colocation</h1>
+        <p style="margin-top:4px;">Affinez les filtres pour trouver l'annonce qui vous correspond.</p>
+      </div>
+
+      <div class="search-layout">
+        <!-- Filtres -->
+        <aside class="filters-panel" aria-label="Filtres de recherche">
+          <h3>Filtres</h3>
+          <form id="filters-form">
+            <div class="filter-group">
+              <h4>Ville</h4>
+              <div class="field" style="margin-bottom:0;">
+                <input type="text" id="f-ville" placeholder="Ex : Toulouse" />
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Budget mensuel (€)</h4>
+              <div class="range-row">
+                <input type="number" id="f-prix-min" placeholder="Min" min="0" />
+                <input type="number" id="f-prix-max" placeholder="Max" min="0" />
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Recherche de</h4>
+              <div class="chip-group" id="f-genre">
+                <button type="button" class="chip" data-value="homme" aria-pressed="false">Homme</button>
+                <button type="button" class="chip" data-value="femme" aria-pressed="false">Femme</button>
+                <button type="button" class="chip" data-value="mixte" aria-pressed="false">Mixte</button>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Préférences</h4>
+              <div class="chip-group" id="f-prefs">
+                <button type="button" class="chip" data-key="animaux" aria-pressed="false">Animaux acceptés</button>
+                <button type="button" class="chip" data-key="fumeur" aria-pressed="false">Fumeur accepté</button>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <h4>Équipements</h4>
+              <div class="chip-group" id="f-equipements">
+                <button type="button" class="chip" data-value="wifi" aria-pressed="false">Wifi</button>
+                <button type="button" class="chip" data-value="lave-linge" aria-pressed="false">Lave-linge</button>
+                <button type="button" class="chip" data-value="parking" aria-pressed="false">Parking</button>
+                <button type="button" class="chip" data-value="balcon" aria-pressed="false">Balcon</button>
+                <button type="button" class="chip" data-value="ascenseur" aria-pressed="false">Ascenseur</button>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">Appliquer les filtres</button>
+            <button type="button" class="btn btn-ghost btn-block" id="reset-filters" style="margin-top:8px;">Réinitialiser</button>
+          </form>
+        </aside>
+
+        <!-- Résultats -->
+        <section>
+          <div class="results-header">
+            <div class="results-count" id="results-count">Chargement des annonces…</div>
+            <div style="display:flex; gap:12px; align-items:center;">
+              <div class="sort-select">
+                <label for="sort" class="sr-only">Trier par</label>
+                <select id="sort">
+                  <option value="recent">Plus récentes</option>
+                  <option value="prix-asc">Prix croissant</option>
+                  <option value="prix-desc">Prix décroissant</option>
+                </select>
+              </div>
+              <div class="view-toggle" role="tablist" aria-label="Mode d'affichage">
+                <button type="button" data-view="list" class="active" role="tab" aria-selected="true">Liste</button>
+                <button type="button" data-view="map" role="tab" aria-selected="false">Carte</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="map" hidden></div>
+
+          <div class="listing-grid" id="results-grid">
+            <div class="card listing-card"><div class="skeleton" style="aspect-ratio:4/3;"></div><div class="listing-body"><div class="skeleton" style="height:16px;width:70%;"></div></div></div>
+            <div class="card listing-card"><div class="skeleton" style="aspect-ratio:4/3;"></div><div class="listing-body"><div class="skeleton" style="height:16px;width:70%;"></div></div></div>
+            <div class="card listing-card"><div class="skeleton" style="aspect-ratio:4/3;"></div><div class="listing-body"><div class="skeleton" style="height:16px;width:70%;"></div></div></div>
+          </div>
+
+          <div class="load-more-row">
+            <button class="btn btn-outline" id="load-more" hidden>Charger plus d'annonces</button>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div id="site-footer"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script type="module" src="js/pages/recherche.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Connexion — ColocMatch</title>
+  <meta name="description" content="Connectez-vous à votre compte ColocMatch pour gérer vos annonces et vos messages." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="auth-shell">
+    <div class="auth-visual">
+      <div class="auth-visual-text">
+        <h2>Bon retour parmi nous</h2>
+        <p>Retrouvez vos conversations, vos favoris et vos annonces en un instant.</p>
+      </div>
+    </div>
+
+    <div class="auth-form-wrap">
+      <div class="auth-card">
+        <h1>Connexion</h1>
+        <p class="sub">Accédez à votre espace ColocMatch.</p>
+
+        <div class="auth-form-error" id="auth-error" role="alert"></div>
+
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="email">Adresse email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+            <div class="field-error"></div>
+          </div>
+          <div class="field">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" autocomplete="current-password" required />
+            <div class="field-error"></div>
+          </div>
+          <div style="display:flex; justify-content:flex-end; margin-bottom:18px;">
+            <a href="#" id="forgot-link" style="font-size:0.85rem; color:var(--color-primary); font-weight:600;">Mot de passe oublié ?</a>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="login-btn">Se connecter</button>
+        </form>
+
+        <p class="auth-switch">Pas encore de compte ? <a href="inscription.html">Créer un compte</a></p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/pages/connexion.js"></script>
+</body>
+</html>

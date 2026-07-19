@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Créer un compte — ColocMatch</title>
+  <meta name="description" content="Créez votre compte ColocMatch pour publier ou rechercher une colocation." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="assets/favicon.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/auth.css" />
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="auth-shell">
+    <div class="auth-visual">
+      <div class="auth-visual-text">
+        <h2>Rejoignez la communauté</h2>
+        <p>Créez votre profil, publiez une annonce ou trouvez votre futur colocataire en quelques clics.</p>
+      </div>
+    </div>
+
+    <div class="auth-form-wrap">
+      <div class="auth-card">
+        <h1>Créer un compte</h1>
+        <p class="sub">Ça prend moins d'une minute.</p>
+
+        <div class="auth-form-error" id="auth-error" role="alert"></div>
+
+        <form id="signup-form" novalidate>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+            <div class="field">
+              <label for="prenom">Prénom</label>
+              <input type="text" id="prenom" name="prenom" autocomplete="given-name" required />
+              <div class="field-error"></div>
+            </div>
+            <div class="field">
+              <label for="nom">Nom</label>
+              <input type="text" id="nom" name="nom" autocomplete="family-name" required />
+              <div class="field-error"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label for="email">Adresse email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+            <div class="field-error"></div>
+          </div>
+          <div class="field">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" autocomplete="new-password" required />
+            <div class="field-hint">8 caractères minimum, avec majuscule, minuscule et chiffre.</div>
+            <div class="field-error"></div>
+          </div>
+          <div class="field">
+            <label for="password2">Confirmer le mot de passe</label>
+            <input type="password" id="password2" name="password2" autocomplete="new-password" required />
+            <div class="field-error"></div>
+          </div>
+          <div class="checkbox-row" style="margin-bottom:20px;">
+            <input type="checkbox" id="cgu" name="cgu" required />
+            <label for="cgu" style="margin:0; font-weight:500; font-size:0.85rem;">J'accepte les conditions d'utilisation</label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block" id="signup-btn">Créer mon compte</button>
+        </form>
+
+        <p class="auth-switch">Déjà un compte ? <a href="connexion.html">Se connecter</a></p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/pages/inscription.js"></script>
+</body>
+</html>

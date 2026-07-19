@@ -1,0 +1,75 @@
+rules_version = '2';
+
+// ==========================================================================
+// ColocMatch — Règles de sécurité Firestore
+// Principe : un utilisateur authentifié ne peut modifier que ses propres
+// données ; la lecture des annonces est publique, celle des messages est
+// restreinte aux participants de la conversation.
+// ==========================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function estConnecte() {
+      return request.auth != null;
+    }
+
+    function estProprietaire(uid) {
+      return estConnecte() && request.auth.uid == uid;
+    }
+
+    // ---- users ----
+    match /users/{uid} {
+      allow read: if true; // profils publics (nécessaire pour afficher auteur d'annonce)
+      allow create: if estProprietaire(uid);
+      allow update: if estProprietaire(uid);
+      allow delete: if false;
+    }
+
+    // ---- annonces ----
+    match /annonces/{annonceId} {
+      allow read: if true;
+      allow create: if estConnecte()
+                    && request.resource.data.auteur == request.auth.uid
+                    && request.resource.data.titre is string
+                    && request.resource.data.titre.size() > 0
+                    && request.resource.data.titre.size() <= 120
+                    && request.resource.data.prix is number
+                    && request.resource.data.prix >= 0;
+      allow update: if estConnecte() && resource.data.auteur == request.auth.uid;
+      allow delete: if estConnecte() && resource.data.auteur == request.auth.uid;
+    }
+
+    // ---- conversations ----
+    match /conversations/{conversationId} {
+      allow read: if estConnecte() && request.auth.uid in resource.data.participants;
+      allow create: if estConnecte() && request.auth.uid in request.resource.data.participants;
+      allow update: if estConnecte() && request.auth.uid in resource.data.participants;
+      allow delete: if false;
+    }
+
+    // ---- messages ----
+    match /messages/{messageId} {
+      allow read: if estConnecte()
+                  && exists(/databases/$(database)/documents/conversations/$(resource.data.conversationId))
+                  && request.auth.uid in get(/databases/$(database)/documents/conversations/$(resource.data.conversationId)).data.participants;
+      allow create: if estConnecte()
+                    && request.resource.data.expediteur == request.auth.uid
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() <= 3000;
+      allow update: if estConnecte()
+                    && request.auth.uid in get(/databases/$(database)/documents/conversations/$(resource.data.conversationId)).data.participants
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lu']); // seul le champ "lu" est modifiable après envoi
+      allow delete: if false;
+    }
+
+    // ---- favoris ----
+    match /favoris/{favoriId} {
+      allow read: if estConnecte() && resource.data.uid == request.auth.uid;
+      allow create: if estConnecte() && request.resource.data.uid == request.auth.uid;
+      allow delete: if estConnecte() && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+  }
+}

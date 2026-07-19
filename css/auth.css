@@ -1,0 +1,48 @@
+/* ==========================================================================
+   ColocMatch — Authentification
+   ========================================================================== */
+
+.auth-shell {
+  min-height: calc(100vh - var(--header-h));
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.auth-visual {
+  position: relative;
+  background: var(--gradient-match);
+  display: flex; align-items: flex-end;
+  padding: 48px;
+  overflow: hidden;
+}
+.auth-visual::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.35), transparent 55%);
+}
+.auth-visual-text { position: relative; color: #fff; max-width: 380px; }
+.auth-visual-text h2 { color: #fff; margin-bottom: 10px; }
+.auth-visual-text p { color: rgba(255,255,255,0.85); }
+
+.auth-form-wrap {
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 24px;
+}
+.auth-card { width: 100%; max-width: 400px; }
+.auth-card h1 { font-size: 1.6rem; margin-bottom: 6px; }
+.auth-card .sub { margin-bottom: 28px; }
+.auth-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; color: var(--color-text-muted); font-size: 0.82rem; }
+.auth-divider::before, .auth-divider::after { content: ""; flex: 1; height: 1px; background: var(--color-border); }
+.auth-switch { text-align: center; margin-top: 20px; font-size: 0.9rem; color: var(--color-text-muted); }
+.auth-switch a { color: var(--color-primary); font-weight: 600; }
+.auth-form-error {
+  background: #fdecea; color: var(--color-danger);
+  border: 1px solid #f4c4c1; border-radius: var(--radius-md);
+  padding: 10px 14px; font-size: 0.85rem; margin-bottom: 18px; display: none;
+}
+[data-theme="dark"] .auth-form-error { background: #3a1a1a; border-color: #5c2626; }
+.auth-form-error.visible { display: block; }
+
+@media (max-width: 860px) {
+  .auth-shell { grid-template-columns: 1fr; }
+  .auth-visual { display: none; }
+}
